@@ -27,12 +27,7 @@ use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
-    public function getExpertWithThemes(Request $request)
-    {
-        //    if(){
 
-        //    }
-    }
 
     public function createSubject(Request $request): JsonResponse
     {
@@ -223,7 +218,6 @@ class UserController extends Controller
                 'message' => "Информация о роли успешна обновлена"
             ]
         ], 201);
-
     }
     public function createExpert(Request $request)
     {
@@ -252,7 +246,6 @@ class UserController extends Controller
                 'message' => "Информация о роли успешна обновлена"
             ]
         ], 201);
-
     }
     public function addingAccessToTest(Request $request)
     {
@@ -293,23 +286,23 @@ class UserController extends Controller
                 'error' => [
                     'code' => 422,
                     'errors' => $validator->errors(),
-                        'message' => 'Ошибка валидации'
-                    ]
-                ], 422);
-            }
-            ResultTests::create([
-                'mark' => $request->mark,
-                'test_id' => $request->test_id,
-                'subject_id' => $request->subject_id,
-                'user_id' => auth('sanctum')->user()->id
-            ]);
-            return response()->json([
-                'data' => [
-                    'code' => 201,
-                    'message' => "Информация об оценке успешно обновлена"
+                    'message' => 'Ошибка валидации'
                 ]
-            ], 201);
+            ], 422);
         }
+        ResultTests::create([
+            'mark' => $request->mark,
+            'test_id' => $request->test_id,
+            'subject_id' => $request->subject_id,
+            'user_id' => auth('sanctum')->user()->id
+        ]);
+        return response()->json([
+            'data' => [
+                'code' => 201,
+                'message' => "Информация об оценке успешно обновлена"
+            ]
+        ], 201);
+    }
 
 
     public function login(Request $request)
@@ -340,21 +333,21 @@ class UserController extends Controller
         $user = Auth::user();
         $token = $user->createToken('token')->plainTextToken;
         $user->update([
-            'token'=>$token
+            'token' => $token
         ]);
-        $cookie = cookie('jwt', $token, 60 * 24 * 3); 
+        $cookie = cookie('jwt', $token, 60 * 24 * 3);
         return response()->json([
             'data' => [
-                
-                'role' =>Role::where('id', UsersRoles::where('user_id',$user->id)
-                ->first()->role_id)
-                ->first()->slug ,
-                'permission' =>Permission::where('id', UsersPermissions::where('user_id',$user->id)
-                ->first()->permission_id)
-                ->first()->slug ,
+
+                'role' => Role::where('id', UsersRoles::where('user_id', $user->id)
+                    ->first()->role_id)
+                    ->first()->slug,
+                'permission' => Permission::where('id', UsersPermissions::where('user_id', $user->id)
+                    ->first()->permission_id)
+                    ->first()->slug,
                 'code' => 200,
                 'message' => "Аутентифицирован",
-                'token' =>$token,
+                'token' => $token,
             ]
         ])->withCookie($cookie);
     }
@@ -368,5 +361,24 @@ class UserController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/');
+    }
+    public function getAllExpert(Request $request)
+    {
+        $role = UsersRoles::where('role_id', 2)->get();
+        $userRole = count($role);
+        for ($i = 0; $i < $userRole; $i++) {
+
+            $users[$i] = [
+                'user' => User::where('id', $role[$i]['user_id'])->first(),
+                'personal_data' => PersonalData::where('user_id', $role[$i]['user_id'])->first()
+            ];
+        }
+        return response()->json([
+            'data' => [
+                $users,
+                'code' => 200,
+                'message' => 'Держи солнышко'
+            ]
+        ], 200);
     }
 }

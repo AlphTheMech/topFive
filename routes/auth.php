@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
+
 Route::post('/register', [RegisteredUserController::class, 'store'])
     ->middleware('guest');
 
@@ -16,11 +17,13 @@ Route::post('/login', [AuthenticatedSessionController::class, 'store'])
 
 Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
     ->middleware('guest');
-    
-Route::post('/reset-password', [NewPasswordController::class, 'store'])
+
+// Route::get('/password-reset/{token}', [NewPasswordController::class, 'store'])
+//     ->middleware('guest')
+//     ->name('password.update');
+Route::post('/password-reset', [NewPasswordController::class, 'store'])
     ->middleware('guest')
     ->name('password.update');
-
 Route::get('/verify-email/{id}/{hash}', [VerifyEmailController::class, '__invoke'])
     ->middleware(['auth', 'signed', 'throttle:6,1'])
     ->name('verification.verify');

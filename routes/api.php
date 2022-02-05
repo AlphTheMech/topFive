@@ -33,8 +33,8 @@ Route::post('/give_acces_expert', [UserController::class, 'addingAccessToTest'])
 Route::middleware(['auth:sanctum'])->get('/find_tests', [UserController::class, 'searchForAnExpert']); //Получение тестов с открытым доступом
 Route::middleware(['auth:sanctum'])->post('/accept_result', [UserController::class, 'postResultTest']); //Добавление результатов прохождения теста
 Route::middleware(['auth:sanctum'])->post('/image', [ImageController::class, 'create']); //Загрузка фото
-Route::post('/login', [UserController::class, 'login']);
-
+Route::post('/login', [UserController::class, 'login']);//Авторизация
+Route::get('/get_all_expert', [UserController::class, 'getAllExpert']);//Получение всех экспертов
 // Route::post('/signin', [UserController::class, 'login']);
 // Route::group(['middleware' => 'role:user'], function( ){
 //     Route::post('/signin', [UserController::class, 'login']);
