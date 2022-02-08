@@ -33,7 +33,7 @@ Route::group(['middleware' => ['auth:sanctum', 'role:expert']], function () {
     Route::get('/user/info', [UserController::class, 'getInfoUser']);//Получение информации о пользователе
     Route::post('/image', [ImageController::class, 'create']); //Загрузка фото
     Route::get('/find_tests', [UserController::class, 'searchForAnExpert']); //Получение тестов с открытым доступом
-    Route::post('/accept_result', [UserController::class, 'postResultTest']); //Добавление результатов прохождения теста
+    // Route::post('/accept_result', [UserController::class, 'postResultTest']); //Добавление результатов прохождения теста
 });
 
 Route::group(['middleware' => ['auth:sanctum', 'role:teacher']], function () {
