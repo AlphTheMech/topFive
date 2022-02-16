@@ -24,6 +24,7 @@ Route::get('/dowload_file', [ImageController::class, 'donwload']); //Скачи�
 // Route::post('/signin', [UserController::class, 'login']);
 Route::post('/login', [UserController::class, 'login']); //Авторизация
 Route::group(['middleware' => ['auth:sanctum', 'role:user']], function () {
+    Route::get('/get_dialog', [UserController::class, 'getDialog']);
     Route::get('/user/info', [UserController::class, 'getInfoUser']);//Получение информации о пользователе
     Route::post('/user/image', [ImageController::class, 'create']); //Загрузка фото
     Route::get('/user/find_tests', [UserController::class, 'searchForAnExpert']); //Получение тестов с открытым доступом
@@ -57,4 +58,5 @@ Route::group(['middleware' => ['auth:sanctum', 'role:admin']], function () {
     Route::post('/admin/create_new_expert', [UserController::class, 'createExpert']); //Выдача прав доступа "Эксперт"
     Route::post('/admin/give_acces_expert', [UserController::class, 'addingAccessToTest']); //Открытие доступа к тесту
     Route::post('/admin/create_test', [UserController::class, 'postTests']); //Добавление тестов 
+    
 });

@@ -13,7 +13,7 @@ class Dialog extends Migration
      */
     public function up()
     {
-        Schema::create('dialog', function(Blueprint $table){
+        Schema::create('dialogs', function(Blueprint $table){
             $table->id();
             $table->unsignedBigInteger('from_id');
             $table->unsignedBigInteger('to_id');

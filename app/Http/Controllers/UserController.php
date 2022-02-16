@@ -24,6 +24,8 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Resources\InfoResource;
 use App\Http\Resources\PersonalResource;
+use App\Models\Dialog;
+use App\Models\Messages;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
 
@@ -381,5 +383,25 @@ class UserController extends Controller
                 'message' => 'Держи солнышко'
             ]
         ], 200);
+    }
+    public function getMessages(){
+        $user= auth('sanctum')->user()->id; 
+        $message= Messages::where('author_id', $user)->get();
+    }
+    public function getDialog(){
+        $user= auth('sanctum')->user()->id; 
+       return $message= Messages::where('author_id', $user)->get();
+        $user= auth('sanctum')->user()->id; 
+
+       return response()->json([
+           'data'=>[
+               'dialogs'=> Dialog::where('to_id', $user)->get()
+           ]
+           ]);
+       
+        // $count=count($dialog);
+        // for ($i=0; $i < $count; $i++) { 
+        //     $dialogs[$i]= 
+        // }
     }
 }

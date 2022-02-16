@@ -22,7 +22,7 @@ class Message extends Migration
             $table->string('content');
             $table->timestamps();
             $table->foreign('author_id')->references('id')->on('users');
-            $table->foreign('dialog_id')->references('id')->on('dialog');
+            $table->foreign('dialog_id')->references('id')->on('dialogs');
             // $table->primary(['message_id', 'author_id']);
         });
     }
