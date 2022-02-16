@@ -92,8 +92,8 @@ class UserController extends Controller
         $user = User::where('email', $request->email)->first();
         return response()->json([
             'data' => [
-                    'user_info' => InfoResource::make($user),
-                    // 'personal_data' => PersonalData::where('user_id', $user->id)->first()
+                'user_info' => InfoResource::make($user),
+                // 'personal_data' => PersonalData::where('user_id', $user->id)->first()
             ],
             'code' => 200,
             'message' => "Держи солнышко"
@@ -384,21 +384,25 @@ class UserController extends Controller
             ]
         ], 200);
     }
-    public function getMessages(){
-        $user= auth('sanctum')->user()->id; 
-        $message= Messages::where('author_id', $user)->get();
-    }
-    public function getDialog(){
-        $user= auth('sanctum')->user()->id; 
-       return $message= Messages::where('author_id', $user)->get();
-        $user= auth('sanctum')->user()->id; 
-
+    public function getMessages()
+    {
+        $user = auth('sanctum')->user()->id;
        return response()->json([
-           'data'=>[
-               'dialogs'=> Dialog::where('to_id', $user)->get()
-           ]
-           ]);
-       
+            'data'=>[
+                'messeges'=> Messages::where('author_id', $user)->get()
+            ]
+            ]);
+    }
+    public function getDialog()
+    {
+        $user = auth('sanctum')->user()->id;
+
+        return response()->json([
+            'data' => [
+                'dialogs' => Dialog::where('to_id', $user)->get()
+            ]
+        ]);
+
         // $count=count($dialog);
         // for ($i=0; $i < $count; $i++) { 
         //     $dialogs[$i]= 
