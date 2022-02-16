@@ -22,6 +22,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Resources\InfoResource;
+use App\Http\Resources\PersonalResource;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
 
@@ -56,15 +58,16 @@ class UserController extends Controller
     public function getInfoUser()
     {
         $id = auth('sanctum')->user()->id;
+
         return response()->json([
             'data' => [
-
-                'user' => User::where('id', $id)->first(),
-                'personal_data' => PersonalData::where('user_id', $id)->first(),
-                'code' => 200,
+                'user' => InfoResource::make(User::where('id', $id)->first()),
+                'token' => User::where('id', $id)->first()->token,
+                'email_verified' => User::where('id', $id)->first()->email_verified,
                 'sex' => 'Attack helicopter',
-                'message' => 'Полученные данные'
-            ]
+            ],
+            'code' => 200,
+            'message' => 'Полученные данные'
         ], 200);
     }
     public function getExperts(Request $request)
