@@ -90,13 +90,11 @@ class UserController extends Controller
         $user = User::where('email', $request->email)->first();
         return response()->json([
             'data' => [
-                'item' => [
-                    'user_info' => $user,
-                    'personal_data' => PersonalData::where('user_id', $user->id)->first()
-                ],
-                'code' => 200,
-                'message' => "Держи солнышко "
-            ]
+                    'user_info' => InfoResource::make($user),
+                    // 'personal_data' => PersonalData::where('user_id', $user->id)->first()
+            ],
+            'code' => 200,
+            'message' => "Держи солнышко"
         ], 200);
     }
     public function postTests(Request $request)
