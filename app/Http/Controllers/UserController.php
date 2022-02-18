@@ -95,7 +95,7 @@ class UserController extends Controller
                 'user_info' => InfoResource::make($user),
                 // 'personal_data' => PersonalData::where('user_id', $user->id)->first()
             ],
-            'token'=>$user->token,
+            'token' => $user->token,
             'code' => 200,
             'message' => "Держи солнышко"
         ], 200);
@@ -165,20 +165,6 @@ class UserController extends Controller
     public function searchForAnExpert(Request $request)
     {
         $user = auth('sanctum')->user()->id;
-        // $user = 4;
-        // $validator = Validator::make($request->all(), [
-        //     // 'tests_id' => ['required', 'integer'],
-        //     'id' => ['required', 'integer'],
-        // ]);
-        // if ($validator->fails()) {
-        //     return response()->json([
-        //         'error' => [
-        //             'code' => 422,
-        //             'errors' => $validator->errors(),
-        //             'message' => 'Ошибка валидации'
-        //         ]
-        //     ], 422);
-        // }
         $test = TestsPermissions::where('user_id', $user)->get();
         $count = count($test);
         for ($i = 0; $i < $count; $i++) {
@@ -197,23 +183,11 @@ class UserController extends Controller
     }
     public function createTeacher(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'token' => ['required'],
-        ]);
-        if ($validator->fails()) {
-            return response()->json([
-                'error' => [
-                    'code' => 422,
-                    'errors' => $validator->errors(),
-                    'message' => 'Ошибка валидации'
-                ]
-            ], 422);
-        }
-        UsersRoles::where('user_id', User::where('token', $request->token)->first()->id)->update([
+        UsersRoles::where('user_id', User::where('token', $request->cookie('jwt'))->first()->id)->update([
             'role_id' => 3
         ]);
 
-        UsersPermissions::where('user_id', User::where('token', $request->token)->first()->id)->update([
+        UsersPermissions::where('user_id', User::where('token', $request->cookie('jwt'))->first()->id)->update([
             'permission_id' => 3
         ]);
         return response()->json([
@@ -225,29 +199,11 @@ class UserController extends Controller
     }
     public function createExpert(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'token' => ['required'],
-        ]);
-        if ($validator->fails()) {
-            return response()->json([
-                'error' => [
-                    'code' => 422,
-                    'errors' => $validator->errors(),
-                    'message' => 'Ошибка валидации'
-                ]
-            ], 422);
-        }
-        UsersRoles::where('user_id', User::where('token', $request->token)
-        ->first()
-        ->id)
-        ->update([
+        UsersRoles::where('user_id', User::where('token', $request->cookie('jwt'))->first()->id)->update([
             'role_id' => 2
         ]);
 
-        UsersPermissions::where('user_id', User::where('token', $request->token)
-        ->first()
-        ->id)
-        ->update([
+        UsersPermissions::where('user_id', User::where('token', $request->cookie('jwt'))->first()->id)->update([
             'permission_id' => 2
         ]);
         return response()->json([
@@ -262,7 +218,6 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'name_subject' => ['required', 'string', 'max:255'],
             'name_test' => ['required', 'string', 'max:255'],
-            'token' => ['required'],
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -273,9 +228,8 @@ class UserController extends Controller
                 ]
             ], 422);
         }
-
         TestsPermissions::create([
-            'user_id' => User::where('token', $request->token)->first()->id,
+            'user_id' => User::where('token', $request->cookie('jwt'))->first()->id,
             'tests_id' => Tests::where('name_test', $request->name_test)->first()->id
         ]);
         return response()->json([
@@ -372,6 +326,58 @@ class UserController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/');
+    }
+    public function store(Request $request)
+    {
+        // return response()->json([$request->all()]);
+
+        $validator = Validator::make($request->all(), [
+            'first_name' => ['required', 'string', 'max:255'],
+            'middle_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', Rules\Password::defaults()],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => [
+                    'code' => 422,
+                    'errors' => $validator->errors(),
+                    'message' => 'Ошибка валидации'
+                ]
+            ], 422);
+        }
+
+        $user = User::create([
+            'name' => $request->first_name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
+
+        event(new Registered($user));
+
+        Auth::login($user);
+        $token = $user->createToken('token')->plainTextToken;
+        $user->update([
+            'token' => $token
+        ]);
+        PersonalData::create([
+            'first_name' => $request->first_name,
+            'middle_name' => $request->middle_name,
+            'last_name' => $request->last_name,
+            'user_id' => auth('sanctum')->user()->id
+        ]);
+        $user->roles()->attach(Role::where('slug', 'user')->first());
+        $user->save();
+        $user->permissions()->attach(Permission::where('slug', 'standard-user')->first());
+        $user->save();
+        $cookie = cookie('jwt', $token, 60 * 24 * 3);
+        return response()->json([
+            'token' => $token,
+            'code' => 201
+
+        ], 201)->withCookie($cookie);
     }
     public function getAllExpert(Request $request)
     {
