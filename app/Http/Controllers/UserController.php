@@ -66,7 +66,7 @@ class UserController extends Controller
                 'user' => InfoResource::make(User::where('id', $id)->first()),
                 'token' => User::where('id', $id)->first()->token,
                 'email_verified' => User::where('id', $id)->first()->email_verified,
-                'sex' => 'Attack helicopter',
+                'male' => 'Attack helicopter',
             ],
             'code' => 200,
             'message' => 'Полученные данные'
@@ -95,6 +95,7 @@ class UserController extends Controller
                 'user_info' => InfoResource::make($user),
                 // 'personal_data' => PersonalData::where('user_id', $user->id)->first()
             ],
+            'token'=>$user->token,
             'code' => 200,
             'message' => "Держи солнышко"
         ], 200);
@@ -197,7 +198,7 @@ class UserController extends Controller
     public function createTeacher(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'id' => ['required'],
+            'token' => ['required'],
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -208,11 +209,11 @@ class UserController extends Controller
                 ]
             ], 422);
         }
-        UsersRoles::where('user_id', $request->id)->update([
+        UsersRoles::where('user_id', User::where('token', $request->token)->first()->id)->update([
             'role_id' => 3
         ]);
 
-        UsersPermissions::where('user_id', $request->id)->update([
+        UsersPermissions::where('user_id', User::where('token', $request->token)->first()->id)->update([
             'permission_id' => 3
         ]);
         return response()->json([
@@ -225,7 +226,7 @@ class UserController extends Controller
     public function createExpert(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'id' => ['required'],
+            'token' => ['required'],
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -236,11 +237,17 @@ class UserController extends Controller
                 ]
             ], 422);
         }
-        UsersRoles::where('user_id', $request->id)->update([
+        UsersRoles::where('user_id', User::where('token', $request->token)
+        ->first()
+        ->id)
+        ->update([
             'role_id' => 2
         ]);
 
-        UsersPermissions::where('user_id', $request->id)->update([
+        UsersPermissions::where('user_id', User::where('token', $request->token)
+        ->first()
+        ->id)
+        ->update([
             'permission_id' => 2
         ]);
         return response()->json([
@@ -255,7 +262,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'name_subject' => ['required', 'string', 'max:255'],
             'name_test' => ['required', 'string', 'max:255'],
-            'id' => ['required'],
+            'token' => ['required'],
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -266,8 +273,9 @@ class UserController extends Controller
                 ]
             ], 422);
         }
+
         TestsPermissions::create([
-            'user_id' => $request->id,
+            'user_id' => User::where('token', $request->token)->first()->id,
             'tests_id' => Tests::where('name_test', $request->name_test)->first()->id
         ]);
         return response()->json([
@@ -387,11 +395,11 @@ class UserController extends Controller
     public function getMessages()
     {
         $user = auth('sanctum')->user()->id;
-       return response()->json([
-            'data'=>[
-                'messeges'=> Messages::where('author_id', $user)->get()
+        return response()->json([
+            'data' => [
+                'messeges' => Messages::where('author_id', $user)->get()
             ]
-            ]);
+        ]);
     }
     public function getDialog()
     {

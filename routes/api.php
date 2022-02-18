@@ -49,6 +49,7 @@ Route::group(['middleware' => ['auth:sanctum', 'role:teacher']], function () {
     Route::get('/teacher/find_for_admin', [UserController::class, 'findForAdmin']); //Поиск по почте
 });
 Route::group(['middleware' => ['auth:sanctum', 'role:admin']], function () {
+    Route::get('/admin/get_all_expert', [UserController::class, 'getAllExpert']); //Получение всех экспертов
     Route::get('/admin/find_for_admin', [UserController::class, 'findForAdmin']); //Поиск по почте
     Route::post('/admin/create_subject', [UserController::class, 'createSubject']); //Добавление предмета
     Route::get('/admin/info', [UserController::class, 'getInfoUser']);//Получение информации о пользователе
