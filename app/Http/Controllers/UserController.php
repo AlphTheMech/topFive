@@ -61,7 +61,7 @@ class UserController extends Controller
     public function getInfoUser()
     {
         $id = auth('sanctum')->user()->id;
-
+        
         return response()->json([
             'data' => [
                 'user' => InfoResource::make(User::where('id', $id)->first()),
