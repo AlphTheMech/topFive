@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\App;
+
 return [
 
     /*
@@ -173,6 +175,8 @@ return [
         /*
          * Application Service Providers...
          */
+        App\Providers\RolesServiceProvider::class,
+        App\Providers\PermissionServiceProvider::class,
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
         // App\Providers\BroadcastServiceProvider::class,
