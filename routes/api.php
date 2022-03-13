@@ -33,6 +33,7 @@ Route::group(['prefix'=>'user','middleware' => ['auth:sanctum', 'role:user']], f
     Route::post('/accept_result', [UserController::class, 'postResultTest']); //Добавление результатов прохождения теста
     Route::get('/test_statistics', [UserController::class, 'gettingTestStatistics']);//Статистика по тесту
     Route::get('/all_test_statistics', [UserController::class, 'gettingTestStatisticsAll']);//Общая статистика
+    Route::get('/teacher_statistics', [UserController::class, 'teacherExperts']);//Получение статистики для учителя
 });
 Route::group(['prefix'=>'expert','middleware' => ['auth:sanctum', 'role:expert']], function () {
 		Route::get('/get_message', [UserController::class, 'getMessage']);// Получение сообщений

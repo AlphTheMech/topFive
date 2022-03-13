@@ -32,11 +32,10 @@ use App\Models\Messages;
 use App\Models\TeacherExpert;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
+use Tymon\JWTAuth\Claims\Subject;
 
 class UserController extends Controller
 {
-
-
     public function createSubject(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
@@ -64,7 +63,6 @@ class UserController extends Controller
     public function getInfoUser()
     {
         $id = auth('sanctum')->user()->id;
-
         return response()->json([
             'data' => [
                 'user' => InfoResource::make(User::where('id', $id)->first()),
@@ -654,18 +652,39 @@ class UserController extends Controller
     }
     public function gettingTestStatisticsAll(Request $request)
     {
-        $statistics = ExpertStatistics::get()->sortByDesc('statistics_score');
+        $statistics = ExpertStatistics::get();
         $count = count($statistics);
+        $setScore = 0;
         for ($i = 0; $i < $count; $i++) {
+            echo $i;
             $personalData = PersonalData::where('user_id', $statistics[$i]['expert_id'])->first();
             $user = User::where('id', $statistics[$i]['expert_id'])->first();
-            $users[$i] = [
-                'first_name' => $personalData->first_name,
-                'middle_name' => $personalData->middle_name,
-                'last_name' => $personalData->last_name,
-                'email' => $user->email,
-                'statistics_score' => $statistics[$i]['statistics_score']
-            ];
+
+            if ($i == 0) {
+
+                $users[$i] = [
+                    'first_name' => $personalData->first_name,
+                    'middle_name' => $personalData->middle_name,
+                    'last_name' => $personalData->last_name,
+                    'email' => $user->email,
+                    'statistics_score' => $statistics[$i]['statistics_score']
+                ];
+                $setScore = $statistics[$i]['statistics_score'];
+            }
+            if ($users[$i]['email'] == $user->email) {
+                $setScore += $statistics[$i]['statistics_score'];
+                $users[$i - 1] = [
+                    'statistics_score' => $setScore
+                ];
+            } else {
+                $users[$i] = [
+                    'first_name' => $personalData->first_name,
+                    'middle_name' => $personalData->middle_name,
+                    'last_name' => $personalData->last_name,
+                    'email' => $user->email,
+                    'statistics_score' => $statistics[$i]['statistics_score']
+                ];
+            }
         }
         return response()->json([
             'data' => [
@@ -689,21 +708,54 @@ class UserController extends Controller
                 ]
             ], 422);
         }
-    	$result= ResultTests::where('test_id', $request->id)->get();
-        $count=count($result);
+        $result = ResultTests::where('test_id', $request->id)->get();
+        $count = count($result);
         for ($i = 0; $i < $count; $i++) {
             $tests[$i] = [
-            	'user_id'=>User::where('id', $result[$i]['user_id'])->first(),
-            	'subject'=>SubjectOfStudies::where('id', $result[$i]['subject_id'])->first()->name,
+                'user_id' => User::where('id', $result[$i]['user_id'])->first(),
+                'subject' => SubjectOfStudies::where('id', $result[$i]['subject_id'])->first()->name,
                 'name_test' => Tests::where('id', $result[$i]['test_id'])->first()->name_test,
                 // 'json_data' => Tests::where('id', $result[$i]['test_id'])->first()->json_data
-                'mark'=>ResultTests::where('test_id', $result[$i]['test_id'])->first()->mark
+                'mark' => ResultTests::where('test_id', $result[$i]['test_id'])->first()->mark
             ];
         }
         return response()->json([
-            'items'=> $tests,
-            'code'=>200,
-            'message'=>'Данные об оценке успешно получены'
-        ],200);
+            'items' => $tests,
+            'code' => 200,
+            'message' => 'Данные об оценке успешно получены'
+        ], 200);
+    }
+    public function teacherExperts()
+    {
+        $id = auth('sanctum')->user()->id;
+        $teacherExpert = TeacherExpert::where('teacher_id', $id)->get();
+        $count = count($teacherExpert);
+        for ($i = 0; $i < $count; $i++) {
+            $expertUser[$i] = ExpertStatistics::where('expert_id', $teacherExpert[$i]['expert_id'])->first();
+        }
+        $expertUserCount = count($expertUser);
+        for ($i = 0; $i < $expertUserCount; $i++) {
+            $attempt =  ExpertStatistics::where('expert_id', $expertUser[$i]['expert_id'])->first();
+            $personalData = PersonalData::where('user_id', $expertUser[$i]['expert_id'])->first();
+            $user = User::where('id', $expertUser[$i]['expert_id'])->first();
+            $test_name = Tests::where('id', $expertUser[$i]['test_id'])->first();
+            $subject = SubjectOfStudies::where('id', SubjectTests::where('tests_id',  $expertUser[$i]['test_id'])->first()->subject_id)->first();
+            $expertAttempt[$i] = [
+                'statistics_score' => $attempt->statistics_score,
+                'first_name' => $personalData->first_name,
+                'middle_name' => $personalData->middle_name,
+                'last_name' => $personalData->last_name,
+                'email' => $user->email,
+                'test_name' => $test_name->name_test,
+                'subject' => $subject->name,
+            ];
+        }
+        return response()->json([
+            'data' => [
+                'items' => $expertAttempt,
+                'code' => 201,
+                'message' => 'Держи солнышко'
+            ]
+        ], 201);
     }
 }
