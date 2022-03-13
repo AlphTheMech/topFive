@@ -18,24 +18,25 @@ class RoleMiddleware
      */
     public function handle($request, Closure $next, $role, $permission = null)
     {
-        if (!auth()->user()->hasRole($role)) {
-            // abort(404);
-            return response()->json([
-                'error' => [
-                    'code' => 403,
-                    'message' => "Access is denied"
-                ]
-            ], 403);
-        }
         if ($permission !== null && !auth()->user()->can($permission)) {
             // abort(404);
             return response()->json([
                 'error' => [
                     'code' => 403,
-                    'message' => "Access is denied"
+                    'message' => "Access is denied21"
                 ]
             ], 403);
         }
+        if (!auth()->user()->hasRole($role)) {
+            // abort(404);
+            return response()->json([
+                'error' => [
+                    'code' => 403,
+                    'message' => "Access is denied12"
+                ]
+            ], 403);
+        }
+        
         return $next($request);
     }
 }

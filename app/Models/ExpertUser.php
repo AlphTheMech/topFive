@@ -5,19 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ResultTests extends Model
+class ExpertUser extends Model
 {
     use HasFactory;
+
+    protected $table = 'expert_user';
+
     protected $fillable = [
-        'mark',
         'user_id',
         'test_id',
-        'subject_id',
-        'number_of_attempts'
+        'expert_id'
     ];
-
-    public function NumberAttempt()
-    {
-        return $this->number_of_attempts;
-    }
 }

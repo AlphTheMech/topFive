@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http;
+
+use App\Http\Middleware\NumberAttemptMiddleware;
 use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 

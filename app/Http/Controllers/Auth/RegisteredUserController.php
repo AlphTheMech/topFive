@@ -44,7 +44,6 @@ class RegisteredUserController extends Controller
                 ]
             ], 422);
         }
-
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -72,8 +71,8 @@ class RegisteredUserController extends Controller
         $cookie = cookie('jwt', $token, 60 * 24 * 3);
         return response()->json([
             'token' => $token,
-            'code'=>201
-            
-        ],201)->withCookie($cookie);
+            'code' => 201
+
+        ], 201)->withCookie($cookie);
     }
 }
