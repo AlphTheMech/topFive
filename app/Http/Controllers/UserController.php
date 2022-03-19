@@ -783,14 +783,14 @@ class UserController extends Controller
     {
         $session->block();
         broadcast(new BlockEvent($session->id, true));
-        return response(null, 201);
+        return response()->json(null, 201);
     }
 
     public function unblockUser(Session $session)
     {
         $session->unblock();
         broadcast(new BlockEvent($session->id, false));
-        return response(null, 201);
+        return response()->json(null, 201);
     }
     public function send(Session $session, Request $request)
     {
@@ -800,12 +800,12 @@ class UserController extends Controller
         $chat = $message->createForSend($session->id);
         $message->createForReceive($session->id, $request->to_user);
         broadcast(new PrivateChatEvent($message->content, $chat));
-        return response($chat->id, 200);
+        return response()->json($chat->id, 200);
     }
 
     public function chats(Session $session)
     {
-        return ChatResource::collection($session->chats->where('user_id', auth('sanctum')->user()->id));
+        return response()->json(ChatResource::collection($session->chats->where('user_id', auth('sanctum')->user()->id))) ;
     }
 
     public function readMessage(Session $session)
@@ -821,14 +821,14 @@ class UserController extends Controller
     {
         $session->deleteChats();
         $session->chats->count() == 0 ? $session->deleteMessages() : '';
-        return response('cleared', 200);
+        return response()->json('cleared', 200);
     }
     public function createSession(Request $request)
     {
         $session = Session::create(['user1_id' => auth()->id(), 'user2_id' => $request->friend_id]);
         $modifiedSession = new SessionResource($session);
         broadcast(new SessionEvent($modifiedSession, auth()->id()));
-        return $modifiedSession;
+        return response()->json($modifiedSession,200);
     }
     public function getFriends()
     {
