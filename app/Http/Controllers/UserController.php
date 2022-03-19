@@ -30,12 +30,31 @@ use App\Models\ExpertStatistics;
 use App\Models\ExpertUser;
 use App\Models\Messages;
 use App\Models\TeacherExpert;
+use App\Events\BlockEvent;
+use App\Events\MsgReadEvent;
+use App\Events\PrivateChatEvent;
+use App\Events\SessionEvent;
+use App\Http\Resources\ChatResource;
+use App\Http\Resources\SessionResource;
+use App\Http\Resources\UserResource;
+use App\Models\Session;
+use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
 use Tymon\JWTAuth\Claims\Subject;
 
 class UserController extends Controller
 {
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function createSubject(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
@@ -549,70 +568,70 @@ class UserController extends Controller
             ]
         ], 200);
     }
-    public function getMessage(Request $request)
-    {
-        // $user= auth('sanctum')->user()->id;
+    // public function getMessage(Request $request)
+    // {
+    //     // $user= auth('sanctum')->user()->id;
 
-        // $dialog=Dialog::where('to_id', $user)->get();
-        $message = Messages::where('dialog_id', $request->id)->get();
-        $dialog = Dialog::where('id', $request->id)->first();
-        // return $message;
-        $count = count($message);
-        for ($i = 0; $i < $count; $i++) {
-            if ($dialog->from_id == $message[$i]['author_id']) {
-                $item[$i] = [
-                    'message_from' => $message[$i]['content'],
-                ];
-            } else {
-                $item[$i] = [
-                    'message_to' => $message[$i]['content'],
-                ];
-            }
+    //     // $dialog=Dialog::where('to_id', $user)->get();
+    //     $message = Messages::where('dialog_id', $request->id)->get();
+    //     $dialog = Dialog::where('id', $request->id)->first();
+    //     // return $message;
+    //     $count = count($message);
+    //     for ($i = 0; $i < $count; $i++) {
+    //         if ($dialog->from_id == $message[$i]['author_id']) {
+    //             $item[$i] = [
+    //                 'message_from' => $message[$i]['content'],
+    //             ];
+    //         } else {
+    //             $item[$i] = [
+    //                 'message_to' => $message[$i]['content'],
+    //             ];
+    //         }
 
-            // $message[$i] = [
+    //         // $message[$i] = [
 
 
-            // 	'message_from'=>Messages::where('author_id', Dialog::where('id', $request->id)->first()->from_id)->first()->content,
-            // 	'message_to'=>Messages::where('author_id', Dialog::where('id', $request->id)->first()->to_id)->first()->content,
-            // 	// 'message_from' => Tests::where('id', $test[$i]['tests_id'])->first()->content,
-            //  //   'message_to' => Tests::where('id', $test[$i]['tests_id'])->first()->content,
-            //     // 'json_data' => Tests::where('id', $test[$i]['tests_id'])->first()->json_data
-            // ];
-        }
-        return response()->json([
-            'data' => $item,
-            'code' => 201,
-            'message' => 'Держи солнышко'
-            // 'message_from'=>Messages::where('author_id', $user)->
-        ], 201);
-    }
-    public function getDialog()
-    {
-        $user = auth('sanctum')->user()->id;
-        $dialog = Dialog::where('to_id', $user)->get();
-        $count = count($dialog);
-        for ($i = 0; $i < $count; $i++) {
-            $message[$i] = [
-                'from_id' => $dialog[$i]['from_id'],
-                'from' => User::where('id', $dialog[$i]['from_id'])->first(),
-                'to_id' => $dialog[$i]['to_id'],
-                'to' => User::where('id', $dialog[$i]['to_id'])->first(),
-                // 'message_from' => Tests::where('id', $test[$i]['tests_id'])->first()->content,
-                //   'message_to' => Tests::where('id', $test[$i]['tests_id'])->first()->content,
-                // 'json_data' => Tests::where('id', $test[$i]['tests_id'])->first()->json_data
-            ];
-        }
-        return response()->json([
-            'data' =>  $message,
-            'code' => 201,
-            'message' => 'Держи солнышко'
-        ], 201);
+    //         // 	'message_from'=>Messages::where('author_id', Dialog::where('id', $request->id)->first()->from_id)->first()->content,
+    //         // 	'message_to'=>Messages::where('author_id', Dialog::where('id', $request->id)->first()->to_id)->first()->content,
+    //         // 	// 'message_from' => Tests::where('id', $test[$i]['tests_id'])->first()->content,
+    //         //  //   'message_to' => Tests::where('id', $test[$i]['tests_id'])->first()->content,
+    //         //     // 'json_data' => Tests::where('id', $test[$i]['tests_id'])->first()->json_data
+    //         // ];
+    //     }
+    //     return response()->json([
+    //         'data' => $item,
+    //         'code' => 201,
+    //         'message' => 'Держи солнышко'
+    //         // 'message_from'=>Messages::where('author_id', $user)->
+    //     ], 201);
+    // }
+    // public function getDialog()
+    // {
+    //     $user = auth('sanctum')->user()->id;
+    //     $dialog = Dialog::where('to_id', $user)->get();
+    //     $count = count($dialog);
+    //     for ($i = 0; $i < $count; $i++) {
+    //         $message[$i] = [
+    //             'from_id' => $dialog[$i]['from_id'],
+    //             'from' => User::where('id', $dialog[$i]['from_id'])->first(),
+    //             'to_id' => $dialog[$i]['to_id'],
+    //             'to' => User::where('id', $dialog[$i]['to_id'])->first(),
+    //             // 'message_from' => Tests::where('id', $test[$i]['tests_id'])->first()->content,
+    //             //   'message_to' => Tests::where('id', $test[$i]['tests_id'])->first()->content,
+    //             // 'json_data' => Tests::where('id', $test[$i]['tests_id'])->first()->json_data
+    //         ];
+    //     }
+    //     return response()->json([
+    //         'data' =>  $message,
+    //         'code' => 201,
+    //         'message' => 'Держи солнышко'
+    //     ], 201);
 
-        // $count=count($dialog);
-        // for ($i=0; $i < $count; $i++) { 
-        //     $dialogs[$i]= 
-        // }
-    }
+    //     // $count=count($dialog);
+    //     // for ($i=0; $i < $count; $i++) { 
+    //     //     $dialogs[$i]= 
+    //     // }
+    // }
     public function gettingTestStatistics(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -655,11 +674,12 @@ class UserController extends Controller
         $statistics = ExpertStatistics::get();
         $count = count($statistics);
         $setScore = 0;
+        $useremail = null;
         for ($i = 0; $i < $count; $i++) {
             echo $i;
             $personalData = PersonalData::where('user_id', $statistics[$i]['expert_id'])->first();
             $user = User::where('id', $statistics[$i]['expert_id'])->first();
-
+            $useremail = $users[$i];
             if ($i == 0) {
 
                 $users[$i] = [
@@ -669,9 +689,10 @@ class UserController extends Controller
                     'email' => $user->email,
                     'statistics_score' => $statistics[$i]['statistics_score']
                 ];
+                // return $users[$i]['email'];
                 $setScore = $statistics[$i]['statistics_score'];
             }
-            if ($users[$i]['email'] == $user->email) {
+            if ($useremail->email == $user->email) {
                 $setScore += $statistics[$i]['statistics_score'];
                 $users[$i - 1] = [
                     'statistics_score' => $setScore
@@ -757,5 +778,60 @@ class UserController extends Controller
                 'message' => 'Держи солнышко'
             ]
         ], 201);
+    }
+    public function blockUser(Session $session)
+    {
+        $session->block();
+        broadcast(new BlockEvent($session->id, true));
+        return response(null, 201);
+    }
+
+    public function unblockUser(Session $session)
+    {
+        $session->unblock();
+        broadcast(new BlockEvent($session->id, false));
+        return response(null, 201);
+    }
+    public function send(Session $session, Request $request)
+    {
+        $message = $session->messages()->create([
+            'content' => $request->message
+        ]);
+        $chat = $message->createForSend($session->id);
+        $message->createForReceive($session->id, $request->to_user);
+        broadcast(new PrivateChatEvent($message->content, $chat));
+        return response($chat->id, 200);
+    }
+
+    public function chats(Session $session)
+    {
+        return ChatResource::collection($session->chats->where('user_id', auth('sanctum')->user()->id));
+    }
+
+    public function readMessage(Session $session)
+    {
+        $chats = $session->chats->where('read_at', null)->where('type', 0)->where('user_id', '!=', auth('sanctum')->user()->id);
+        foreach ($chats as $chat) {
+            $chat->update(['read_at' => Carbon::now()]);
+            broadcast(new MsgReadEvent(new ChatResource($chat), $chat->session_id));
+        }
+    }
+
+    public function clearMessages(Session $session)
+    {
+        $session->deleteChats();
+        $session->chats->count() == 0 ? $session->deleteMessages() : '';
+        return response('cleared', 200);
+    }
+    public function createSession(Request $request)
+    {
+        $session = Session::create(['user1_id' => auth()->id(), 'user2_id' => $request->friend_id]);
+        $modifiedSession = new SessionResource($session);
+        broadcast(new SessionEvent($modifiedSession, auth()->id()));
+        return $modifiedSession;
+    }
+    public function getFriends()
+    {
+        return UserResource::collection(User::where('id', '!=', auth()->id())->get());
     }
 }

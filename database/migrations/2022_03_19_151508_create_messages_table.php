@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class Dialog extends Migration
+class CreateMessagesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,11 @@ class Dialog extends Migration
      */
     public function up()
     {
-        Schema::create('dialogs', function(Blueprint $table){
-            $table->id();
-            $table->unsignedBigInteger('from_id');
-            $table->unsignedBigInteger('to_id');
-            // $table->string('name_dialog')->nullable();
+        Schema::create('messages', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->text('content');
+            $table->unsignedBigInteger('session_id');
+            $table->timestamps();
         });
     }
 
@@ -28,6 +28,6 @@ class Dialog extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('messages');
     }
 }
