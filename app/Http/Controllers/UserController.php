@@ -39,6 +39,7 @@ use App\Http\Resources\SessionResource;
 use App\Http\Resources\UserResource;
 use App\Models\Session;
 use Carbon\Carbon;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
 use Tymon\JWTAuth\Claims\Subject;
@@ -794,6 +795,7 @@ class UserController extends Controller
     }
     public function send(Session $session, Request $request)
     {
+        //Отправлять friend_id ,message. Хранить id чата
         $message = $session->messages()->create([
             'content' => $request->message
         ]);
@@ -805,12 +807,12 @@ class UserController extends Controller
 
     public function chats(Session $session)
     {
-        return response()->json(ChatResource::collection($session->chats->where('user_id', auth('sanctum')->user()->id))) ;
+        return response()->json(ChatResource::collection($session->chats->where('user_id', auth('sanctum')->user()->id)));
     }
 
     public function readMessage(Session $session)
     {
-        $chats = $session->chats->where('read_at', null)->where('type', 0)->where('user_id', '!=', auth('sanctum')->user()->id);
+       $chats = $session->chats->where('read_at', null)->where('type', 0)->where('user_id', '!=', auth('sanctum')->user()->id);
         foreach ($chats as $chat) {
             $chat->update(['read_at' => Carbon::now()]);
             broadcast(new MsgReadEvent(new ChatResource($chat), $chat->session_id));
@@ -825,13 +827,13 @@ class UserController extends Controller
     }
     public function createSession(Request $request)
     {
-        $session = Session::create(['user1_id' => auth()->id(), 'user2_id' => $request->friend_id]);
+        $session = Session::create(['user1_id' =>auth('sanctum')->user()->id, 'user2_id' => $request->friend_id]);
         $modifiedSession = new SessionResource($session);
-        broadcast(new SessionEvent($modifiedSession, auth()->id()));
-        return response()->json($modifiedSession,200);
+        broadcast(new SessionEvent($modifiedSession, auth('sanctum')->user()->id));
+        return response()->json($modifiedSession, 200);
     }
     public function getFriends()
     {
-        return UserResource::collection(User::where('id', '!=', auth()->id())->get());
+        return response()->json(UserResource::collection(User::where('id', '!=', auth()->id())->get()), 200) ;
     }
 }

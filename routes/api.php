@@ -27,14 +27,14 @@ Route::post('/login', [UserController::class, 'login']); //Авторизаци�
 // Route::get('/home', 'HomeController@index')->name('home');
 // Route::get('/chat', 'HomeController@chat')->name('chat');
 Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum', 'role:user']], function () {
-    Route::post('getFriends', [UserController::class, 'getFriends']);
-Route::post('/session/create', [UserController::class, 'createSession']);
-Route::post('/session/{session}/chats', [UserController::class, 'chats']);
-Route::post('/session/{session}/read', [UserController::class, 'readMessage']);
-Route::post('/session/{session}/clear', [UserController::class, 'clearMessages']);
-Route::post('/session/{session}/block', [UserController::class, 'blockUser']);
-Route::post('/session/{session}/unblock', [UserController::class, 'unblockUser']);  
-Route::post('/send/{session}', [UserController::class, 'send']);
+    Route::post('getFriends', [UserController::class, 'getFriends']);//Получение чатов
+    Route::post('/session/create', [UserController::class, 'createSession']);//Создание чата
+    Route::post('/session/chats/{session}', [UserController::class, 'chats']);//Вывод сообщений
+    Route::post('/session/read/{session}', [UserController::class, 'readMessage']);//Сообщение прочитано
+    Route::post('/session/clear/{session}', [UserController::class, 'clearMessages']);//Удалить сообщения
+    Route::post('/session/block/{session}', [UserController::class, 'blockUser']);//Заблокировать пользователя 
+    Route::post('/session/unblock/{session}', [UserController::class, 'unblockUser']);//Разблокировать пользователя 
+    Route::post('/send/{session}', [UserController::class, 'send']);//Добавление сообщения
     Route::get('/get_result', [UserController::class, 'getResults']); //Получение результата теста
     Route::get('/get_message', [UserController::class, 'getMessage']); // Получение сообщений
     Route::get('/get_dialog', [UserController::class, 'getDialog']); //Получение диалогов
@@ -47,14 +47,14 @@ Route::post('/send/{session}', [UserController::class, 'send']);
     Route::get('/teacher_statistics', [UserController::class, 'teacherExperts']); //Получение статистики для учителя
 });
 Route::group(['prefix' => 'expert', 'middleware' => ['auth:sanctum', 'role:expert']], function () {
-    Route::post('getFriends', [UserController::class, 'getFriends']);
-Route::post('/session/create', [UserController::class, 'createSession']);
-Route::post('/session/{session}/chats', [UserController::class, 'chats']);
-Route::post('/session/{session}/read', [UserController::class, 'readMessage']);
-Route::post('/session/{session}/clear', [UserController::class, 'clearMessages']);
-Route::post('/session/{session}/block', [UserController::class, 'blockUser']);
-Route::post('/session/{session}/unblock', [UserController::class, 'unblockUser']);  
-Route::post('/send/{session}', [UserController::class, 'send']);
+    Route::post('getFriends', [UserController::class, 'getFriends']);//Получение чатов
+    Route::post('/session/create', [UserController::class, 'createSession']);//Создание чата
+    Route::post('/session/chats/{session}', [UserController::class, 'chats']);//Вывод сообщений
+    Route::post('/session/read/{session}', [UserController::class, 'readMessage']);//Сообщение прочитано
+    Route::post('/session/clear/{session}', [UserController::class, 'clearMessages']);//Удалить сообщения
+    Route::post('/session/block/{session}', [UserController::class, 'blockUser']);//Заблокировать пользователя 
+    Route::post('/session/unblock/{session}', [UserController::class, 'unblockUser']);//Разблокировать пользователя 
+    Route::post('/send/{session}', [UserController::class, 'send']);//Добавление сообщения
     Route::get('/get_message', [UserController::class, 'getMessage']); // Получение сообщений
     Route::get('/get_dialog', [UserController::class, 'getDialog']); //Получение диалогов
     Route::get('/get_result', [UserController::class, 'getResults']); //Получение результата теста
@@ -67,14 +67,14 @@ Route::post('/send/{session}', [UserController::class, 'send']);
 });
 
 Route::group(['prefix' => 'teacher', 'middleware' => ['auth:sanctum', 'role:teacher']], function () {
-    Route::post('getFriends', [UserController::class, 'getFriends']);
-Route::post('/session/create', [UserController::class, 'createSession']);
-Route::post('/session/{session}/chats', [UserController::class, 'chats']);
-Route::post('/session/{session}/read', [UserController::class, 'readMessage']);
-Route::post('/session/{session}/clear', [UserController::class, 'clearMessages']);
-Route::post('/session/{session}/block', [UserController::class, 'blockUser']);
-Route::post('/session/{session}/unblock', [UserController::class, 'unblockUser']);  
-Route::post('/send/{session}', [UserController::class, 'send']);
+    Route::post('getFriends', [UserController::class, 'getFriends']);//Получение чатов
+    Route::post('/session/create', [UserController::class, 'createSession']);//Создание чата
+    Route::post('/session/chats/{session}', [UserController::class, 'chats']);//Вывод сообщений
+    Route::post('/session/read/{session}', [UserController::class, 'readMessage']);//Сообщение прочитано
+    Route::post('/session/clear/{session}', [UserController::class, 'clearMessages']);//Удалить сообщения
+    Route::post('/session/block/{session}', [UserController::class, 'blockUser']);//Заблокировать пользователя 
+    Route::post('/session/unblock/{session}', [UserController::class, 'unblockUser']);//Разблокировать пользователя 
+    Route::post('/send/{session}', [UserController::class, 'send']);//Добавление сообщения
     Route::get('/get_dialog', [UserController::class, 'getDialog']); //Получение диалогов
     Route::get('/get_result', [UserController::class, 'getResults']); //Получение результата теста
     Route::get('/info', [UserController::class, 'getInfoUser']); //Получение информации о пользователе
@@ -89,14 +89,14 @@ Route::post('/send/{session}', [UserController::class, 'send']);
     Route::get('/test_statistics', [UserController::class, 'gettingTestStatistics']); //Статистика по тесту
 });
 Route::group(['prefix' => 'admin', 'middleware' => ['auth:sanctum', 'role:admin']], function () {
-    Route::post('getFriends', [UserController::class, 'getFriends']);
-Route::post('/session/create', [UserController::class, 'createSession']);
-Route::post('/session/{session}/chats', [UserController::class, 'chats']);
-Route::post('/session/{session}/read', [UserController::class, 'readMessage']);
-Route::post('/session/{session}/clear', [UserController::class, 'clearMessages']);
-Route::post('/session/{session}/block', [UserController::class, 'blockUser']);
-Route::post('/session/{session}/unblock', [UserController::class, 'unblockUser']);  
-Route::post('/send/{session}', [UserController::class, 'send']);
+    Route::post('getFriends', [UserController::class, 'getFriends']);//Получение чатов
+    Route::post('/session/create', [UserController::class, 'createSession']);//Создание чата
+    Route::post('/session/chats/{session}', [UserController::class, 'chats']);//Вывод сообщений
+    Route::post('/session/read/{session}', [UserController::class, 'readMessage']);//Сообщение прочитано
+    Route::post('/session/clear/{session}', [UserController::class, 'clearMessages']);//Удалить сообщения
+    Route::post('/session/block/{session}', [UserController::class, 'blockUser']);//Заблокировать пользователя 
+    Route::post('/session/unblock/{session}', [UserController::class, 'unblockUser']);//Разблокировать пользователя 
+    Route::post('/send/{session}', [UserController::class, 'send']);//Добавление сообщения
     Route::get('/test_statistics', [UserController::class, 'gettingTestStatistics']); //Статистика по тесту
     Route::post('/give_acces_expert', [UserController::class, 'addingAccessToTest']); //Открытие доступа к тесту
     Route::get('/get_dialog', [UserController::class, 'getDialog']); //Получение диалогов
