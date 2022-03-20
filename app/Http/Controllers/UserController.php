@@ -25,10 +25,8 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Resources\FindResource;
 use App\Http\Resources\InfoResource;
 use App\Http\Resources\PersonalResource;
-use App\Models\Dialog;
 use App\Models\ExpertStatistics;
 use App\Models\ExpertUser;
-use App\Models\Messages;
 use App\Models\TeacherExpert;
 use App\Events\BlockEvent;
 use App\Events\MsgReadEvent;
@@ -42,6 +40,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
+use TestPermission;
 use Tymon\JWTAuth\Claims\Subject;
 
 class UserController extends Controller
@@ -308,19 +307,28 @@ class UserController extends Controller
             ], 422);
         }
         $testid = Tests::where('name_test', $request->name_test)->first()->id;
-        TestsPermissions::create([
-            'user_id' => $request->id,
-            'tests_id' => $testid
-        ]);
+         $per = TestsPermissions::where('user_id', auth('sanctum')->user()->id)->where('tests_id', $testid)->first() ??null;
         $user = auth('sanctum')->user()->id;
         $expert = Role::where('id', UsersRoles::where('user_id', $user)->first()->role_id)->first()->slug;
         $expertTeacher = Role::where('id', UsersRoles::where('user_id', $request->id)->first()->role_id)->first()->slug;
         if ($expert == 'expert') {
-            ExpertUser::create([
-                'user_id' => $request->id,
-                'test_id' => $testid,
-                'expert_id' => $user
-            ]);
+            if ($per != null) {
+                ExpertUser::create([
+                    'user_id' => $request->id,
+                    'test_id' => $testid,
+                    'expert_id' => $user
+                ]);
+                ExpertStatistics::create([
+                    'expert_id' => $request->id,
+                    'test_id' => $testid,
+                    'statistics_score' => 0,
+                ]);
+            } else {
+                return response()->json([
+                    'message' => 'Access denied',
+                    'code' => 403
+                ], 403);
+            }
         }
         if ($expert == 'teacher' &&  $expertTeacher == 'expert') {
             ExpertStatistics::create([
@@ -329,6 +337,10 @@ class UserController extends Controller
                 'statistics_score' => 0,
             ]);
         }
+        TestsPermissions::create([
+            'user_id' => $request->id,
+            'tests_id' => $testid
+        ]);
         return response()->json([
             'data' => [
                 'code' => 201,
@@ -812,7 +824,7 @@ class UserController extends Controller
 
     public function readMessage(Session $session)
     {
-       $chats = $session->chats->where('read_at', null)->where('type', 0)->where('user_id', '!=', auth('sanctum')->user()->id);
+        $chats = $session->chats->where('read_at', null)->where('type', 0)->where('user_id', '!=', auth('sanctum')->user()->id);
         foreach ($chats as $chat) {
             $chat->update(['read_at' => Carbon::now()]);
             broadcast(new MsgReadEvent(new ChatResource($chat), $chat->session_id));
@@ -827,13 +839,13 @@ class UserController extends Controller
     }
     public function createSession(Request $request)
     {
-        $session = Session::create(['user1_id' =>auth('sanctum')->user()->id, 'user2_id' => $request->friend_id]);
+        $session = Session::create(['user1_id' => auth('sanctum')->user()->id, 'user2_id' => $request->friend_id]);
         $modifiedSession = new SessionResource($session);
         broadcast(new SessionEvent($modifiedSession, auth('sanctum')->user()->id));
         return response()->json($modifiedSession, 200);
     }
     public function getFriends()
     {
-        return response()->json(UserResource::collection(User::where('id', '!=', auth()->id())->get()), 200) ;
+        return response()->json(UserResource::collection(User::where('id', '!=', auth()->id())->get()), 200);
     }
 }
