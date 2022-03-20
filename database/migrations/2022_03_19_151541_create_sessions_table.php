@@ -20,6 +20,8 @@ class CreateSessionsTable extends Migration
             $table->unique(['user1_id','user2_id']);
             $table->boolean('is_block')->default('0');
             $table->unsignedBigInteger('blocked_by')->nullable();
+            $table->foreign('user1_id')->references('id')->on('users');
+            $table->foreign('user2_id')->references('id')->on('users');
             $table->timestamps();
         });
     }

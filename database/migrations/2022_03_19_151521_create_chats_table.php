@@ -20,6 +20,7 @@ class CreateChatsTable extends Migration
             $table->unsignedBigInteger('user_id');
             $table->dateTime('read_at')->nullable();
             $table->boolean('type');
+            $table->foreign('message_id')->references('id')->on('messages');
             $table->timestamps();
         });
     }
