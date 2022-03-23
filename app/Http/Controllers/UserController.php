@@ -186,11 +186,24 @@ class UserController extends Controller
         // $subject=SubjectOfStudies::where('')
         // if()
         for ($i = 0; $i < $count; $i++) {
-            $tests[$i] = [
-                'id' => Tests::where('id', $test[$i]['tests_id'])->first()->id,
-                'name_test' => Tests::where('id', $test[$i]['tests_id'])->first()->name_test,
-                'json_data' => Tests::where('id', $test[$i]['tests_id'])->first()->json_data
-            ];
+            $tests_collection=Tests::where('id', $test[$i]['tests_id'])->first();
+            $explode=explode('@', $tests_collection->name_test);
+            if(array_key_exists(1, $explode)){
+                $tests[$i] = [
+                    'id' => $tests_collection->id,
+                    'author'=>$explode[2],
+                    'name_test'=>$explode[1],
+                    'full_name_test' => $tests_collection->name_test,
+                    'json_data' => $tests_collection->json_data
+                ];
+            }else{
+                $tests[$i] = [
+                    'id' => $tests_collection->id,
+                    'name_test' => $tests_collection->name_test,
+                    'json_data' => $tests_collection->json_data
+                ];
+            }
+            
         }
 
         return response()->json([
