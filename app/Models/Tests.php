@@ -19,4 +19,5 @@ class Tests extends Model
     {
         return $this->belongsToMany(SubjectOfStudies::class, 'subject_tests');
     }
+
 }

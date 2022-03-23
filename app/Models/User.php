@@ -49,4 +49,8 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+    public function  test()
+    {
+        return $this->belongsToMany(Tests::class , 'tests_permissions');
+    }
 }
