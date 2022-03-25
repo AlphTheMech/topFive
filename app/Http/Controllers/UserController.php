@@ -186,24 +186,23 @@ class UserController extends Controller
         // $subject=SubjectOfStudies::where('')
         // if()
         for ($i = 0; $i < $count; $i++) {
-            $tests_collection=Tests::where('id', $test[$i]['tests_id'])->first();
-            $explode=explode('@', $tests_collection->name_test);
-            if(array_key_exists(1, $explode)){
+            $tests_collection = Tests::where('id', $test[$i]['tests_id'])->first();
+            $explode = explode('@', $tests_collection->name_test);
+            if (array_key_exists(1, $explode)) {
                 $tests[$i] = [
                     'id' => $tests_collection->id,
-                    'author'=>$explode[2],
-                    'name_test'=>$explode[1],
+                    'author' => $explode[2],
+                    'name_test' => $explode[1],
                     'full_name_test' => $tests_collection->name_test,
                     'json_data' => $tests_collection->json_data
                 ];
-            }else{
+            } else {
                 $tests[$i] = [
                     'id' => $tests_collection->id,
                     'name_test' => $tests_collection->name_test,
                     'json_data' => $tests_collection->json_data
                 ];
             }
-            
         }
 
         return response()->json([
@@ -467,6 +466,7 @@ class UserController extends Controller
     {
         $role = UsersRoles::where('role_id', 2)->get();
         $count = count($role);
+
         for ($i = 0; $i < $count; $i++) {
             $user = User::where('id', $role[$i]['user_id'])->first();
             $personal = PersonalData::where('user_id', $role[$i]['user_id'])->first();
@@ -659,20 +659,23 @@ class UserController extends Controller
     }
     public function gettingTestStatisticsAll(Request $request)
     {
-        //  	return WhiteListIP::get();
-        // return $request->ip();
-        $statistics = ExpertStatistics::get()->sortByDesc('statistics_score');
-        $count = count($statistics);
-        for ($i = 0; $i < $count; $i++) {
-            $personalData = PersonalData::where('user_id', $statistics[$i]['expert_id'])->first();
-            $user = User::where('id', $statistics[$i]['expert_id'])->first();
-            $users[$i] = [
-                'first_name' => $personalData->first_name,
-                'middle_name' => $personalData->middle_name,
-                'last_name' => $personalData->last_name,
-                'email' => $user->email,
-                'statistics_score' => $statistics[$i]['statistics_score']
-            ];
+        $statistics = ExpertStatistics::get()->groupBy('expert_id');
+        $p = 0;
+        foreach ($statistics as $key => $statistic) {
+            $personalData = PersonalData::where('user_id', $key)->first();
+            $user = User::where('id', $key)->first();
+            $stat = 0;
+            foreach ($statistic as $item) {
+                $stat += $item['statistics_score'];
+                $users[$p] = [
+                    'first_name' => $personalData->first_name,
+                    'middle_name' => $personalData->middle_name,
+                    'last_name' => $personalData->last_name,
+                    'email' => $user->email,
+                    'statistics_score' => $stat,
+                ];
+            }
+            $p++;
         }
         return response()->json([
             'data' => [
