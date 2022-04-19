@@ -16,4 +16,8 @@ class SubjectOfStudies extends Model
     {
         return $this->belongsToMany(Tests::class, 'subject_tests');
     }
+    public function subjectId()
+    {
+        return $this->id;
+    }
 }

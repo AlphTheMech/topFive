@@ -18,9 +18,11 @@ class InfoResource extends JsonResource
         return [
             'email'=>$this->email, 
             'avatar'=>$this->avatar, 
-            'first_name' => PersonalData::where('user_id', $this->id)->first()->first_name,
-            'middle_name' => PersonalData::where('user_id', $this->id)->first()->middle_name,
-            'last_name' =>PersonalData::where('user_id', $this->id)->first()->last_name
+            'token'=>$this->token, 
+            'email_verified'=>$this->email_verified_at,
+            'first_name' =>$this->personalData ? $this->personalData->first_name : null,
+            'middle_name' => $this->personalData ? $this->personalData->middle_name : null,
+            'last_name' =>$this->personalData ? $this->personalData->last_name : null,
         ];
     }
 }

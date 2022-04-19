@@ -40,6 +40,7 @@ use App\Http\Requests\GettingTestStatisticsRequest;
 use App\Http\Requests\PostResultTestRequest;
 use App\Http\Requests\PostTestsRequest;
 use App\Http\Resources\ChatResource;
+use App\Http\Resources\GetAllResource;
 use App\Http\Resources\SessionResource;
 use App\Http\Resources\UserResource;
 use App\Models\Session;
@@ -75,19 +76,13 @@ class UserController extends Controller
      * getInfoUser
      *
      * @param  mixed $request
-     * @return JsonResponse
+     * @return void
      */
-    public function getInfoUser(Request $request): JsonResponse
+    public function getInfoUser(Request $request)
     {
-      return  $request->user()->all();
-        // $id = auth('sanctum')->user()->id;
-        $cookie = $request->cookie('jwt');
         return response()->json([
             'data' => [
-                'user' => InfoResource::make(User::where('token', $cookie)->first()),
-                'token' => User::where('token', $cookie)->first()->token,
-                'email_verified' => User::where('token', $cookie)->first()->email_verified_at,
-                'male' => 'Attack helicopter',
+              'items'=>  InfoResource::make(User::with('personalData')->where('token', $request->cookie('jwt'))->first())
             ],
             'code' => 200,
             'message' => 'Полученные данные'
@@ -101,13 +96,10 @@ class UserController extends Controller
      */
     public function findForAdmin(FindForAdminRequest $request): JsonResponse
     {
-        $user = User::where('email', $request->email)->first();
         return response()->json([
             'data' => [
-                'user_info' => FindResource::make($user),
-                // 'personal_data' => PersonalData::where('user_id', $user->id)->first()
+                'user_info' => FindResource::make(User::where('email', $request->email)->first()),
             ],
-            // 'token' => $user->token,
             'code' => 200,
             'message' => "Держи солнышко"
         ], 200);
@@ -139,36 +131,13 @@ class UserController extends Controller
      * getAllTests
      *
      * @param  mixed $request
-     * @return JsonResponse
+     * @return void
      */
-    public function getAllTests(Request $request): JsonResponse
+    public function getAllTests(Request $request)
     {
-        $subjectTestId = SubjectTests::where('subject_id', SubjectOfStudies::where('name', $request->name)->first()->id)->get();
-        $subjectCount = $subjectTestId->count();
-        for ($i = 0; $i < $subjectCount; $i++) {
-            $test = Tests::where('id', $subjectTestId[$i]["tests_id"])->first();
-            $explode = explode('@', $test->name_test);
-            if (array_key_exists(1, $explode)) {
-                $tests[$i] = [
-                    'test_id' => $test->id,
-                    'subject_id' => SubjectOfStudies::where('name', $request->name)->first()->id,
-                    'name_test' => $explode[0],
-                    'author' => $explode[1],
-                    'full_name_test' => $test->name_test,
-                    'json_data' => $test->json_data
-                ];
-            } else {
-                $tests[$i] = [
-                    'test_id' => $test->id,
-                    'subject_id' => SubjectOfStudies::where('name', $request->name)->first()->id,
-                    'name_test' => $test->name_test,
-                    'json_data' => $test->json_data
-                ];
-            }
-        }
         return response()->json([
             'data' => [
-                'items' => $tests,
+                'items' =>  GetAllResource::collection(Tests::with('subjectTests')->get()),
                 'code' => 200,
                 'message' => "Держи солнышко"
             ]
@@ -219,9 +188,9 @@ class UserController extends Controller
      * createTeacher
      *
      * @param  mixed $request
-     * @return JsonResponse
+     * @return void
      */
-    public function createTeacher(CreateTeacherRequest $request): JsonResponse
+    public function createTeacher(CreateTeacherRequest $request)
     {
         UsersRoles::where('user_id', User::where('email', $request->email)->first()->id)->update([
             'role_id' => Role::where('slug', $request->role)->first()->id,
@@ -449,7 +418,7 @@ class UserController extends Controller
             $countTest = count($testAll);
             for ($j = 0; $j <  $countTest; $j++) {
                 $test_collection = Tests::where('id', $testAll[$j]['tests_id'])->first();
-                $subject_collection = SubjectOfStudies::where('id', SubjectTests::where('tests_id', $testAll[$j]['tests_id'])->first()->subject_id)->first();
+                $subject_collection = SubjectOfStudies::where('id', SubjectTests::where('tests_id', $testAll[$j]['tests_id'])->first()->subject_of_studies_id)->first();
                 $aboba = explode('@', $test_collection->name_test);
                 if (array_key_exists(1, $aboba)) {
                     $all[$i][$j] = [
@@ -506,7 +475,7 @@ class UserController extends Controller
         for ($i = 0; $i < $count; $i++) {
             $tests[$i] = [
                 'user' => User::where('id', $result[$i]['user_id'])->first(),
-                'subject' => SubjectOfStudies::where('id', $result[$i]['subject_id'])->first()->name,
+                'subject' => SubjectOfStudies::where('id', $result[$i]['subject_of_studies_id'])->first()->name,
                 'name_test' => Tests::where('id', $result[$i]['test_id'])->first()->name_test,
                 // 'json_data' => Tests::where('id', $result[$i]['test_id'])->first()->json_data
                 'mark' => ResultTests::where('test_id', $result[$i]['test_id'])->first()->mark
@@ -602,7 +571,7 @@ class UserController extends Controller
             $personalData = PersonalData::where('user_id', $expertUser[$i]['expert_id'])->first();
             $user = User::where('id', $expertUser[$i]['expert_id'])->first();
             $test_name = Tests::where('id', $expertUser[$i]['test_id'])->first();
-            $subject = SubjectOfStudies::where('id', SubjectTests::where('tests_id',  $expertUser[$i]['test_id'])->first()->subject_id)->first();
+            $subject = SubjectOfStudies::where('id', SubjectTests::where('tests_id',  $expertUser[$i]['test_id'])->first()->subject_of_studies_id)->first();
             $expertAttempt[$i] = [
                 'statistics_score' => $attempt->statistics_score,
                 'first_name' => $personalData->first_name,
@@ -737,9 +706,9 @@ class UserController extends Controller
         $count = count($subject);
         for ($i = 0; $i < $count; $i++) {
             $items[$i] = [
-                'subject_name' => SubjectOfStudies::where('id', $subject[$i]['subject_id'])->first()->name,
+                'subject_name' => SubjectOfStudies::where('id', $subject[$i]['subject_of_studies_id'])->first()->name,
                 'name_test' => Tests::where('id', $subject[$i]['tests_id'])->first()->name_test,
-                'subject_id' => $subject[$i]['subject_id'],
+                'subject_id' => $subject[$i]['subject_of_studies_id'],
                 'test_id' => $subject[$i]['tests_id']
             ];
         }
