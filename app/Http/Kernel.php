@@ -1,11 +1,9 @@
 <?php
 
 namespace App\Http;
-
-use App\Http\Middleware\NumberAttemptMiddleware;
 use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
-
+// use App\Http\Middleware\IPAccess;
 class Kernel extends HttpKernel
 {
     /**
@@ -57,6 +55,7 @@ class Kernel extends HttpKernel
      * @var array<string, class-string|string>
      */
     protected $routeMiddleware = [
+    	'ip'=> \App\Http\Middleware\IPAccess::class,
         'auth' => \App\Http\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,

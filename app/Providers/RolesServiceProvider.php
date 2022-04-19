@@ -1,9 +1,7 @@
 <?php
-
 namespace App\Providers;
-
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\ServiceProvider;
 class RolesServiceProvider extends ServiceProvider
 {
     /**
@@ -15,7 +13,6 @@ class RolesServiceProvider extends ServiceProvider
     {
         //
     }
-
     /**
      * Bootstrap services.
      *

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class TestsPermissions extends Model
 {
     use HasFactory;
-    protected $fillable=[
+    protected $fillable = [
         'user_id',
         'tests_id'
     ];

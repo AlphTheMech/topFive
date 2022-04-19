@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\SubjectOfStudies;
+
 class Tests extends Model
 {
     use HasFactory;
-    protected $fillable=[
+    protected $fillable = [
         'name_test',
         'json_data'
     ];
@@ -18,5 +19,9 @@ class Tests extends Model
     public function subjectTests()
     {
         return $this->belongsToMany(SubjectOfStudies::class, 'subject_tests');
+    }
+    public function permissionTest()
+    {
+        return $this->belongsToMany(User::class, 'tests_permissions');
     }
 }

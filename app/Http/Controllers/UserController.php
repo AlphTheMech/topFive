@@ -32,43 +32,34 @@ use App\Events\BlockEvent;
 use App\Events\MsgReadEvent;
 use App\Events\PrivateChatEvent;
 use App\Events\SessionEvent;
+use App\Http\Requests\AddingAccessToTestRequest;
+use App\Http\Requests\CreateSubjectRequest;
+use App\Http\Requests\CreateTeacherRequest;
+use App\Http\Requests\FindForAdminRequest;
+use App\Http\Requests\GettingTestStatisticsRequest;
+use App\Http\Requests\PostResultTestRequest;
+use App\Http\Requests\PostTestsRequest;
 use App\Http\Resources\ChatResource;
 use App\Http\Resources\SessionResource;
 use App\Http\Resources\UserResource;
 use App\Models\Session;
 use Carbon\Carbon;
+use Illuminate\Broadcasting\Broadcasters\Broadcaster;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
-use TestPermission;
 use Tymon\JWTAuth\Claims\Subject;
 
 class UserController extends Controller
 {
     /**
-     * Create a new controller instance.
+     * createSubject
      *
-     * @return void
+     * @param  mixed $request
+     * @return JsonResponse
      */
-    public function __construct()
+    public function createSubject(CreateSubjectRequest $request): JsonResponse
     {
-        $this->middleware('auth');
-    }
-
-    public function createSubject(Request $request): JsonResponse
-    {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255'
-        ]);
-        if ($validator->fails()) {
-            return response()->json([
-                'error' => [
-                    'code' => 422,
-                    'errors' => $validator->errors(),
-                    'message' => 'Ошибка валидации'
-                ]
-            ], 422);
-        }
         SubjectOfStudies::create([
             'name' => $request->name,
         ]);
@@ -79,37 +70,37 @@ class UserController extends Controller
             ]
         ], 201);
     }
-    public function getInfoUser()
+
+    /**
+     * getInfoUser
+     *
+     * @param  mixed $request
+     * @return JsonResponse
+     */
+    public function getInfoUser(Request $request): JsonResponse
     {
-        $id = auth('sanctum')->user()->id;
+      return  $request->user()->all();
+        // $id = auth('sanctum')->user()->id;
+        $cookie = $request->cookie('jwt');
         return response()->json([
             'data' => [
-                'user' => InfoResource::make(User::where('id', $id)->first()),
-                'token' => User::where('id', $id)->first()->token,
-                'email_verified' => User::where('id', $id)->first()->email_verified,
+                'user' => InfoResource::make(User::where('token', $cookie)->first()),
+                'token' => User::where('token', $cookie)->first()->token,
+                'email_verified' => User::where('token', $cookie)->first()->email_verified_at,
                 'male' => 'Attack helicopter',
             ],
             'code' => 200,
             'message' => 'Полученные данные'
         ], 200);
     }
-    public function getExperts(Request $request)
+    /**
+     * findForAdmin
+     *
+     * @param  mixed $request
+     * @return JsonResponse
+     */
+    public function findForAdmin(FindForAdminRequest $request): JsonResponse
     {
-    }
-    public function findForAdmin(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'email' => ['required', 'email', 'string', 'max:255'],
-        ]);
-        if ($validator->fails()) {
-            return response()->json([
-                'error' => [
-                    'code' => 422,
-                    'errors' => $validator->errors(),
-                    'message' => 'Ошибка валидации'
-                ]
-            ], 422);
-        }
         $user = User::where('email', $request->email)->first();
         return response()->json([
             'data' => [
@@ -121,22 +112,14 @@ class UserController extends Controller
             'message' => "Держи солнышко"
         ], 200);
     }
-    public function postTests(Request $request)
+    /**
+     * postTests
+     *
+     * @param  mixed $request
+     * @return JsonResponse
+     */
+    public function postTests(PostTestsRequest $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'name' => ['required', 'string', 'max:255'],
-            'name_test' => ['required', 'unique:tests', 'string', 'max:255'],
-            'json_data' => ['required']
-        ]);
-        if ($validator->fails()) {
-            return response()->json([
-                'error' => [
-                    'code' => 422,
-                    'errors' => $validator->errors(),
-                    'message' => 'Ошибка валидации'
-                ]
-            ], 422);
-        }
         $tests = Tests::create([
             'name_test' => $request->name_test,
             'json_data' => $request->json_data,
@@ -152,86 +135,94 @@ class UserController extends Controller
             ]
         ], 201);
     }
-    public function getAllTests(Request $request)
+    /**
+     * getAllTests
+     *
+     * @param  mixed $request
+     * @return JsonResponse
+     */
+    public function getAllTests(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'name' => ['required', 'string', 'max:255'],
-        ]);
-        if ($validator->fails()) {
-            return response()->json([
-                'error' => [
-                    'code' => 422,
-                    'errors' => $validator->errors(),
-                    'message' => 'Ошибка валидации'
-                ]
-            ], 422);
-        }
         $subjectTestId = SubjectTests::where('subject_id', SubjectOfStudies::where('name', $request->name)->first()->id)->get();
         $subjectCount = $subjectTestId->count();
         for ($i = 0; $i < $subjectCount; $i++) {
-            $tests[$i] = [
-                'name_test' => Tests::where('id', $subjectTestId[$i]["tests_id"])->first()->name_test,
-                'json_data' => Tests::where('id', $subjectTestId[$i]["tests_id"])->first()->json_data
-            ];
+            $test = Tests::where('id', $subjectTestId[$i]["tests_id"])->first();
+            $explode = explode('@', $test->name_test);
+            if (array_key_exists(1, $explode)) {
+                $tests[$i] = [
+                    'test_id' => $test->id,
+                    'subject_id' => SubjectOfStudies::where('name', $request->name)->first()->id,
+                    'name_test' => $explode[0],
+                    'author' => $explode[1],
+                    'full_name_test' => $test->name_test,
+                    'json_data' => $test->json_data
+                ];
+            } else {
+                $tests[$i] = [
+                    'test_id' => $test->id,
+                    'subject_id' => SubjectOfStudies::where('name', $request->name)->first()->id,
+                    'name_test' => $test->name_test,
+                    'json_data' => $test->json_data
+                ];
+            }
         }
         return response()->json([
             'data' => [
-                'item' => $tests,
+                'items' => $tests,
                 'code' => 200,
                 'message' => "Держи солнышко"
             ]
         ], 200);
     }
 
-    public function searchForAnExpert(Request $request)
+    /**
+     * searchForAnExpert
+     *
+     * @param  mixed $request
+     * @return JsonResponse
+     */
+    public function searchForAnExpert(Request $request): JsonResponse
     {
         $user = auth('sanctum')->user()->id;
-        // $user = 4;
-        // $validator = Validator::make($request->all(), [
-        //     // 'tests_id' => ['required', 'integer'],
-        //     'id' => ['required', 'integer'],
-        // ]);
-        // if ($validator->fails()) {
-        //     return response()->json([
-        //         'error' => [
-        //             'code' => 422,
-        //             'errors' => $validator->errors(),
-        //             'message' => 'Ошибка валидации'
-        //         ]
-        //     ], 422);
-        // }
         $test = TestsPermissions::where('user_id', $user)->get();
         $count = count($test);
         for ($i = 0; $i < $count; $i++) {
-            $tests[$i] = [
-                'name_test' => Tests::where('id', $test[$i]['tests_id'])->first()->name_test,
-                'json_data' => Tests::where('id', $test[$i]['tests_id'])->first()->json_data
-            ];
+            $tests_collection = Tests::where('id', $test[$i]['tests_id'])->first();
+
+            $explode = explode('@', $tests_collection->name_test);
+            if (array_key_exists(1, $explode)) {
+                $tests[$i] = [
+                    'id' => $tests_collection->id,
+                    'name_test' => $explode[0],
+                    'author' => $explode[1],
+                    'full_name_test' => $tests_collection->name_test,
+                    'json_data' => $tests_collection->json_data
+                ];
+            } else {
+                $tests[$i] = [
+                    'id' => $tests_collection->id,
+                    'name_test' => $tests_collection->name_test,
+                    'json_data' => $tests_collection->json_data
+                ];
+            }
         }
+
         return response()->json([
             'data' => [
-                "item" => $tests,
+                "items" => $tests,
                 'code' => 200,
                 'message' => "Держи солнышко"
             ]
         ], 200);
     }
-    public function createTeacher(Request $request)
+    /**
+     * createTeacher
+     *
+     * @param  mixed $request
+     * @return JsonResponse
+     */
+    public function createTeacher(CreateTeacherRequest $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'email' => ['required'],
-            'role' => ['required', 'string'],
-            "permission" => ['required', 'string']
-        ]);
-        if ($validator->fails()) {
-            return response()->json([
-                'error' => [
-                    'code' => 422,
-                    'errors' => $validator->errors(),
-                    'message' => 'Ошибка валидации'
-                ]
-            ], 422);
-        }
         UsersRoles::where('user_id', User::where('email', $request->email)->first()->id)->update([
             'role_id' => Role::where('slug', $request->role)->first()->id,
         ]);
@@ -239,7 +230,6 @@ class UserController extends Controller
         UsersPermissions::where('user_id', User::where('email', $request->email)->first()->id)->update([
             'permission_id' => Permission::where('slug', $request->permission)->first()->id,
         ]);
-
         $user = auth('sanctum')->user()->id;
         $teacher = Role::where('id', UsersRoles::where('user_id', $user)->first()->role_id)->first()->slug;
         if ($request->role == 'expert' && $teacher == 'teacher') {
@@ -262,85 +252,47 @@ class UserController extends Controller
             ]
         ], 201);
     }
-    public function createExpert(Request $request)
+    /**
+     * addingAccessToTest
+     *
+     * @param  mixed $request
+     * @return JsonResponse
+     */
+    public function addingAccessToTest(AddingAccessToTestRequest $request): JsonResponse
     {
-        // $validator = Validator::make($request->all(), [
-        //     'token' => ['required'],
-        // ]);
-        // if ($validator->fails()) {
-        //     return response()->json([
-        //         'error' => [
-        //             'code' => 422,
-        //             'errors' => $validator->errors(),
-        //             'message' => 'Ошибка валидации'
-        //         ]
-        //     ], 422);
-        // }
-        // UsersRoles::where('user_id', User::where('token', $request->cookie('jwt'))->first()->id)->update([
-        //     'role_id' => 2
-        // ]);
-
-        // UsersPermissions::where('user_id', User::where('token', $request->cookie('jwt'))->first()->id)->update([
-        //     'permission_id' => 2
-        // ]);
-        // return response()->json([
-        //     'data' => [
-        //         'code' => 201,
-        //         'message' => "Информация о роли успешна обновлена"
-        //     ]
-        // ], 201);
-    }
-    public function addingAccessToTest(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'name_subject' => ['required', 'string', 'max:255'],
-            'name_test' => ['required', 'string', 'max:255'],
-            'id' => ['required'],
-        ]);
-        if ($validator->fails()) {
-            return response()->json([
-                'error' => [
-                    'code' => 422,
-                    'errors' => $validator->errors(),
-                    'message' => 'Ошибка валидации'
-                ]
-            ], 422);
-        }
         $testid = Tests::where('name_test', $request->name_test)->first()->id;
-         $per = TestsPermissions::where('user_id', auth('sanctum')->user()->id)->where('tests_id', $testid)->first() ??null;
+        TestsPermissions::create([
+            'user_id' => $request->id,
+            'tests_id' => $testid
+        ]);
+
         $user = auth('sanctum')->user()->id;
         $expert = Role::where('id', UsersRoles::where('user_id', $user)->first()->role_id)->first()->slug;
         $expertTeacher = Role::where('id', UsersRoles::where('user_id', $request->id)->first()->role_id)->first()->slug;
         if ($expert == 'expert') {
-            if ($per != null) {
-                ExpertUser::create([
-                    'user_id' => $request->id,
-                    'test_id' => $testid,
-                    'expert_id' => $user
+            ExpertUser::create([
+                'user_id' => $request->id,
+                'test_id' => $testid,
+                'expert_id' => $user
+            ]);
+        }
+        if ($expert == 'teacher' &&  $expertTeacher == 'expert') {
+            $teachereee = TeacherExpert::where('teacher_id', $user)->where('expert_id', $request->id)->first() ?? null;
+            $experteee = ExpertStatistics::where('expert_id', $request->id)->where('test_id', $testid)->first() ?? null;
+            if (!$teachereee) {
+                TeacherExpert::create([
+                    'teacher_id' => $user,
+                    'expert_id' => $request->id,
                 ]);
+            }
+            if (!$experteee) {
                 ExpertStatistics::create([
                     'expert_id' => $request->id,
                     'test_id' => $testid,
                     'statistics_score' => 0,
                 ]);
-            } else {
-                return response()->json([
-                    'message' => 'Access denied',
-                    'code' => 403
-                ], 403);
             }
         }
-        if ($expert == 'teacher' &&  $expertTeacher == 'expert') {
-            ExpertStatistics::create([
-                'expert_id' => $request->id,
-                'test_id' => $testid,
-                'statistics_score' => 0,
-            ]);
-        }
-        TestsPermissions::create([
-            'user_id' => $request->id,
-            'tests_id' => $testid
-        ]);
         return response()->json([
             'data' => [
                 'code' => 201,
@@ -348,23 +300,15 @@ class UserController extends Controller
             ]
         ], 201);
     }
-    public function postResultTest(Request $request)
+    /**
+     * postResultTest
+     *
+     * @param  mixed $request
+     * @return JsonResponse
+     */
+    public function postResultTest(PostResultTestRequest $request): JsonResponse
     {
         $user = auth('sanctum')->user()->id;
-        $validator = Validator::make($request->all(), [
-            'mark' => ['required', 'integer'],
-            'test_id' => ['required'],
-            'subject_id' => ['required'],
-        ]);
-        if ($validator->fails()) {
-            return response()->json([
-                'error' => [
-                    'code' => 422,
-                    'errors' => $validator->errors(),
-                    'message' => 'Ошибка валидации'
-                ]
-            ], 422);
-        }
         $number = 1;
         $userHas = ResultTests::where('user_id', $user)->get();
         $userHasTest = $userHas->where('test_id', $request->test_id)->first();
@@ -420,12 +364,16 @@ class UserController extends Controller
             ]
         ], 201);
     }
-
-
-    public function login(Request $request)
+    /**
+     * login
+     *
+     * @param  mixed $request
+     * @return JsonResponse
+     */
+    public function login(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required',
+            'email' => ['required', 'email', 'max:255'],
             'password' => 'required',
         ]);
 
@@ -455,7 +403,6 @@ class UserController extends Controller
         $cookie = cookie('jwt', $token, 60 * 24 * 3);
         return response()->json([
             'data' => [
-
                 'role' => Role::where('id', UsersRoles::where('user_id', $user->id)
                     ->first()->role_id)
                     ->first()->slug,
@@ -469,6 +416,12 @@ class UserController extends Controller
         ])->withCookie($cookie);
     }
 
+    /**
+     * logout
+     *
+     * @param  mixed $request
+     * @return void
+     */
     public function logout(Request $request)
     {
         Auth::logout();
@@ -479,187 +432,101 @@ class UserController extends Controller
 
         return redirect('/');
     }
-    // public function store(Request $request){
-    //     $validator = Validator::make($request->all(), [
-    //         'first_name' => ['required', 'string', 'max:255'],
-    //         'middle_name' => ['required', 'string', 'max:255'],
-    //         'last_name' => ['required', 'string', 'max:255'],
-    //         'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-    //         'password' => ['required', Rules\Password::defaults()],
-    //     ]);
-
-    //     if ($validator->fails()) {
-    //         return response()->json([
-    //             'error' => [
-    //                 'code' => 422,
-    //                 'errors' => $validator->errors(),
-    //                 'message' => 'Ошибка валидации'
-    //             ]
-    //         ], 422);
-    //     }
-    //     $user = User::create([
-    //         'name' => $request->first_name,
-    //         'email' => $request->email,
-    //         'password' => Hash::make($request->password),
-    //     ]);
-    //     PersonalData::create([
-    //         'first_name' => $request->first_name,
-    //         'middle_name' => $request->middle_name,
-    //         'last_name' => $request->last_name,
-    //         'user_id' => $user->id,
-    //     ]);
-    //     return response()->json()->setStatusCode(204);
-    // }
-    public function store(Request $request)
-    {
-        // return response()->json([$request->all()]);
-
-        $validator = Validator::make($request->all(), [
-            'first_name' => ['required', 'string', 'max:255'],
-            'middle_name' => ['required', 'string', 'max:255'],
-            'last_name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', Rules\Password::defaults()],
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'error' => [
-                    'code' => 422,
-                    'errors' => $validator->errors(),
-                    'message' => 'Ошибка валидации'
-                ]
-            ], 422);
-        }
-
-        $user = User::create([
-            'name' => $request->first_name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-
-        event(new Registered($user));
-
-        Auth::login($user);
-        $token = $user->createToken('token')->plainTextToken;
-        $user->update([
-            'token' => $token
-        ]);
-        PersonalData::create([
-            'first_name' => $request->first_name,
-            'middle_name' => $request->middle_name,
-            'last_name' => $request->last_name,
-            'user_id' => auth('sanctum')->user()->id
-        ]);
-        $user->roles()->attach(Role::where('slug', 'user')->first());
-        $user->save();
-        $user->permissions()->attach(Permission::where('slug', 'standard-user')->first());
-        $user->save();
-        // $cookie = cookie('jwt', $token, 60 * 24 * 3);
-        return response()->json([
-            'token' => $token,
-            'code' => 201
-
-        ], 201);
-    }
-    public function getAllExpert(Request $request)
+    /**
+     * getAllExpert
+     *
+     * @param  mixed $request
+     * @return JsonResponse
+     */
+    public function getAllExpert(Request $request): JsonResponse
     {
         $role = UsersRoles::where('role_id', 2)->get();
-        $userRole = count($role);
-        for ($i = 0; $i < $userRole; $i++) {
+        $count = count($role);
+        for ($i = 0; $i < $count; $i++) {
+            $user = User::where('id', $role[$i]['user_id'])->first();
+            $personal = PersonalData::where('user_id', $role[$i]['user_id'])->first();
+            $testAll = TestsPermissions::where('user_id', $role[$i]['user_id'])->get();
+            $countTest = count($testAll);
+            for ($j = 0; $j <  $countTest; $j++) {
+                $test_collection = Tests::where('id', $testAll[$j]['tests_id'])->first();
+                $subject_collection = SubjectOfStudies::where('id', SubjectTests::where('tests_id', $testAll[$j]['tests_id'])->first()->subject_id)->first();
+                $aboba = explode('@', $test_collection->name_test);
+                if (array_key_exists(1, $aboba)) {
+                    $all[$i][$j] = [
+                        'name_test' => $aboba[0],
+                        'author' => $aboba[1],
+                        'full_name_test' => $test_collection->name_test,
+                        'test_id' => $test_collection->id,
+                        'subject_id' => $subject_collection->id,
+                        'subject_name' => $subject_collection->name,
+                    ];
+                } else {
+                    $all[$i][$j] = [
+                        'name_test' => $test_collection->name_test,
+                        'test_id' => $test_collection->id,
+                        'subject_id' => $subject_collection->id,
+                        'subject_name' => $subject_collection->name,
+                    ];
+                }
+            }
 
-            $users[$i] = [
-                'user' => User::where('id', $role[$i]['user_id'])->first(),
-                'personal_data' => PersonalData::where('user_id', $role[$i]['user_id'])->first()
+            $tests[$i] = [
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email
+                ],
+                'personal_data' => [
+                    'first_name' => $personal->first_name,
+                    'last_name' => $personal->last_name,
+                    'middle_name' => $personal->middle_name,
+                ],
+                'tests' => $all[$i]
             ];
         }
         return response()->json([
             'data' => [
-                $users,
+                'items' => $tests,
                 'code' => 200,
                 'message' => 'Держи солнышко'
             ]
         ], 200);
     }
-    // public function getMessage(Request $request)
-    // {
-    //     // $user= auth('sanctum')->user()->id;
 
-    //     // $dialog=Dialog::where('to_id', $user)->get();
-    //     $message = Messages::where('dialog_id', $request->id)->get();
-    //     $dialog = Dialog::where('id', $request->id)->first();
-    //     // return $message;
-    //     $count = count($message);
-    //     for ($i = 0; $i < $count; $i++) {
-    //         if ($dialog->from_id == $message[$i]['author_id']) {
-    //             $item[$i] = [
-    //                 'message_from' => $message[$i]['content'],
-    //             ];
-    //         } else {
-    //             $item[$i] = [
-    //                 'message_to' => $message[$i]['content'],
-    //             ];
-    //         }
-
-    //         // $message[$i] = [
-
-
-    //         // 	'message_from'=>Messages::where('author_id', Dialog::where('id', $request->id)->first()->from_id)->first()->content,
-    //         // 	'message_to'=>Messages::where('author_id', Dialog::where('id', $request->id)->first()->to_id)->first()->content,
-    //         // 	// 'message_from' => Tests::where('id', $test[$i]['tests_id'])->first()->content,
-    //         //  //   'message_to' => Tests::where('id', $test[$i]['tests_id'])->first()->content,
-    //         //     // 'json_data' => Tests::where('id', $test[$i]['tests_id'])->first()->json_data
-    //         // ];
-    //     }
-    //     return response()->json([
-    //         'data' => $item,
-    //         'code' => 201,
-    //         'message' => 'Держи солнышко'
-    //         // 'message_from'=>Messages::where('author_id', $user)->
-    //     ], 201);
-    // }
-    // public function getDialog()
-    // {
-    //     $user = auth('sanctum')->user()->id;
-    //     $dialog = Dialog::where('to_id', $user)->get();
-    //     $count = count($dialog);
-    //     for ($i = 0; $i < $count; $i++) {
-    //         $message[$i] = [
-    //             'from_id' => $dialog[$i]['from_id'],
-    //             'from' => User::where('id', $dialog[$i]['from_id'])->first(),
-    //             'to_id' => $dialog[$i]['to_id'],
-    //             'to' => User::where('id', $dialog[$i]['to_id'])->first(),
-    //             // 'message_from' => Tests::where('id', $test[$i]['tests_id'])->first()->content,
-    //             //   'message_to' => Tests::where('id', $test[$i]['tests_id'])->first()->content,
-    //             // 'json_data' => Tests::where('id', $test[$i]['tests_id'])->first()->json_data
-    //         ];
-    //     }
-    //     return response()->json([
-    //         'data' =>  $message,
-    //         'code' => 201,
-    //         'message' => 'Держи солнышко'
-    //     ], 201);
-
-    //     // $count=count($dialog);
-    //     // for ($i=0; $i < $count; $i++) { 
-    //     //     $dialogs[$i]= 
-    //     // }
-    // }
-    public function gettingTestStatistics(Request $request)
+    /**
+     * getResults
+     *
+     * @param  mixed $request
+     * @return JsonResponse
+     */
+    public function getResults(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'test_id' => ['required'],
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'error' => [
-                    'code' => 422,
-                    'errors' => $validator->errors(),
-                    'message' => 'Ошибка валидации'
-                ]
-            ], 422);
+        $result = ResultTests::where('test_id', $request->id)->get();
+        $count = count($result);
+        for ($i = 0; $i < $count; $i++) {
+            $tests[$i] = [
+                'user' => User::where('id', $result[$i]['user_id'])->first(),
+                'subject' => SubjectOfStudies::where('id', $result[$i]['subject_id'])->first()->name,
+                'name_test' => Tests::where('id', $result[$i]['test_id'])->first()->name_test,
+                // 'json_data' => Tests::where('id', $result[$i]['test_id'])->first()->json_data
+                'mark' => ResultTests::where('test_id', $result[$i]['test_id'])->first()->mark
+            ];
         }
+
+        return response()->json([
+            'items' =>  $test = collect($tests)->sortByDesc('mark')->values()->all() ?? null,
+            'code' => 200,
+            'message' => 'Данные об оценке успешно получены'
+        ], 200);
+    }
+    /**
+     * gettingTestStatistics
+     *
+     * @param  mixed $request
+     * @return JsonResponse
+     */
+    public function gettingTestStatistics(GettingTestStatisticsRequest $request): JsonResponse
+    {
         $statistics =  ExpertStatistics::where('test_id', $request->test_id)->get()->sortByDesc('statistics_score');
 
         $count = count($statistics);
@@ -676,90 +543,52 @@ class UserController extends Controller
         }
         return response()->json([
             'data' => [
-                'items' => $users,
+                'items' => $user = collect($users)->sortByDesc('statistics_score')->values()->all() ?? null,
                 'code' => 201,
                 'message' => 'Держи солнышко'
             ]
         ], 201);
     }
-    public function gettingTestStatisticsAll(Request $request)
+    /**
+     * gettingTestStatisticsAll
+     *
+     * @param  mixed $request
+     * @return JsonResponse
+     */
+    public function gettingTestStatisticsAll(Request $request): JsonResponse
     {
-        $statistics = ExpertStatistics::get();
-        $count = count($statistics);
-        $setScore = 0;
-        $useremail = null;
-        for ($i = 0; $i < $count; $i++) {
-            echo $i;
-            $personalData = PersonalData::where('user_id', $statistics[$i]['expert_id'])->first();
-            $user = User::where('id', $statistics[$i]['expert_id'])->first();
-            $useremail = $users[$i];
-            if ($i == 0) {
-
-                $users[$i] = [
+        $statistics = ExpertStatistics::get()->groupBy('expert_id');
+        $p = 0;
+        foreach ($statistics as $key => $statistic) {
+            $personalData = PersonalData::where('user_id', $key)->first() ?? null;
+            $user = User::where('id', $key)->first() ?? null;
+            $stat = 0;
+            foreach ($statistic as $item) {
+                $stat += $item['statistics_score'];
+                $users[$p] = [
                     'first_name' => $personalData->first_name,
                     'middle_name' => $personalData->middle_name,
                     'last_name' => $personalData->last_name,
                     'email' => $user->email,
-                    'statistics_score' => $statistics[$i]['statistics_score']
-                ];
-                // return $users[$i]['email'];
-                $setScore = $statistics[$i]['statistics_score'];
-            }
-            if ($useremail->email == $user->email) {
-                $setScore += $statistics[$i]['statistics_score'];
-                $users[$i - 1] = [
-                    'statistics_score' => $setScore
-                ];
-            } else {
-                $users[$i] = [
-                    'first_name' => $personalData->first_name,
-                    'middle_name' => $personalData->middle_name,
-                    'last_name' => $personalData->last_name,
-                    'email' => $user->email,
-                    'statistics_score' => $statistics[$i]['statistics_score']
+                    'statistics_score' => $stat,
                 ];
             }
+            $p++;
         }
         return response()->json([
             'data' => [
-                'items' => $users,
+                'items' => $user = collect($users)->sortByDesc('statistics_score')->values()->all() ?? null,
                 'code' => 201,
                 'message' => 'Держи солнышко'
             ]
         ], 201);
     }
-    public function getResults(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'id' => ['required'],
-        ]);
-        if ($validator->fails()) {
-            return response()->json([
-                'error' => [
-                    'errors' => $validator->errors(),
-                    'code' => 422,
-                    'message' => 'Validation error'
-                ]
-            ], 422);
-        }
-        $result = ResultTests::where('test_id', $request->id)->get();
-        $count = count($result);
-        for ($i = 0; $i < $count; $i++) {
-            $tests[$i] = [
-                'user_id' => User::where('id', $result[$i]['user_id'])->first(),
-                'subject' => SubjectOfStudies::where('id', $result[$i]['subject_id'])->first()->name,
-                'name_test' => Tests::where('id', $result[$i]['test_id'])->first()->name_test,
-                // 'json_data' => Tests::where('id', $result[$i]['test_id'])->first()->json_data
-                'mark' => ResultTests::where('test_id', $result[$i]['test_id'])->first()->mark
-            ];
-        }
-        return response()->json([
-            'items' => $tests,
-            'code' => 200,
-            'message' => 'Данные об оценке успешно получены'
-        ], 200);
-    }
-    public function teacherExperts()
+    /**
+     * teacherExperts
+     *
+     * @return JsonResponse
+     */
+    public function teacherExperts(): JsonResponse
     {
         $id = auth('sanctum')->user()->id;
         $teacherExpert = TeacherExpert::where('teacher_id', $id)->get();
@@ -792,20 +621,39 @@ class UserController extends Controller
             ]
         ], 201);
     }
-    public function blockUser(Session $session)
+    /**
+     * blockUser
+     *
+     * @param  mixed $session
+     * @return JsonResponse
+     */
+    public function blockUser(Session $session): JsonResponse
     {
         $session->block();
         broadcast(new BlockEvent($session->id, true));
         return response()->json(null, 201);
     }
 
-    public function unblockUser(Session $session)
+    /**
+     * unblockUser
+     *
+     * @param  mixed $session
+     * @return JsonResponse
+     */
+    public function unblockUser(Session $session): JsonResponse
     {
         $session->unblock();
         broadcast(new BlockEvent($session->id, false));
         return response()->json(null, 201);
     }
-    public function send(Session $session, Request $request)
+    /**
+     * send
+     *
+     * @param  mixed $session
+     * @param  mixed $request
+     * @return JsonResponse
+     */
+    public function send(Session $session, Request $request): JsonResponse
     {
         //Отправлять friend_id ,message. Хранить id чата
         $message = $session->messages()->create([
@@ -817,11 +665,23 @@ class UserController extends Controller
         return response()->json($chat->id, 200);
     }
 
-    public function chats(Session $session)
+    /**
+     * chats
+     *
+     * @param  mixed $session
+     * @return JsonResponse
+     */
+    public function chats(Session $session): JsonResponse
     {
         return response()->json(ChatResource::collection($session->chats->where('user_id', auth('sanctum')->user()->id)));
     }
 
+    /**
+     * readMessage
+     *
+     * @param  mixed $session
+     * @return void
+     */
     public function readMessage(Session $session)
     {
         $chats = $session->chats->where('read_at', null)->where('type', 0)->where('user_id', '!=', auth('sanctum')->user()->id);
@@ -831,12 +691,24 @@ class UserController extends Controller
         }
     }
 
-    public function clearMessages(Session $session)
+    /**
+     * clearMessages
+     *
+     * @param  mixed $session
+     * @return JsonResponse
+     */
+    public function clearMessages(Session $session): JsonResponse
     {
         $session->deleteChats();
         $session->chats->count() == 0 ? $session->deleteMessages() : '';
         return response()->json('cleared', 200);
     }
+    /**
+     * createSession
+     *
+     * @param  mixed $request
+     * @return void
+     */
     public function createSession(Request $request)
     {
         $session = Session::create(['user1_id' => auth('sanctum')->user()->id, 'user2_id' => $request->friend_id]);
@@ -844,8 +716,52 @@ class UserController extends Controller
         broadcast(new SessionEvent($modifiedSession, auth('sanctum')->user()->id));
         return response()->json($modifiedSession, 200);
     }
-    public function getFriends()
+    /**
+     * getFriends
+     *
+     * @return JsonResponse
+     */
+    public function getFriends(): JsonResponse
     {
         return response()->json(UserResource::collection(User::where('id', '!=', auth()->id())->get()), 200);
+    }
+    /**
+     * getSubject
+     *
+     * @param  mixed $request
+     * @return JsonResponse
+     */
+    public function getSubject(Request $request): JsonResponse
+    {
+        $subject = SubjectTests::get();
+        $count = count($subject);
+        for ($i = 0; $i < $count; $i++) {
+            $items[$i] = [
+                'subject_name' => SubjectOfStudies::where('id', $subject[$i]['subject_id'])->first()->name,
+                'name_test' => Tests::where('id', $subject[$i]['tests_id'])->first()->name_test,
+                'subject_id' => $subject[$i]['subject_id'],
+                'test_id' => $subject[$i]['tests_id']
+            ];
+        }
+        return response()->json([
+            'data' => [
+                'items' => $items,
+                'code' => 200,
+                'message' => 'Держи солнышко'
+            ]
+        ], 200);
+    }
+    /**
+     * allSubject
+     *
+     * @return JsonResponse
+     */
+    public function allSubject(): JsonResponse
+    {
+        return response()->json([
+            'items' => SubjectOfStudies::get(),
+            'code' => 200,
+            'message' => 'Держи солнышко'
+        ], 200);
     }
 }

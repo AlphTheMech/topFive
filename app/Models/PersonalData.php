@@ -14,4 +14,6 @@ class PersonalData extends Model
         'last_name', 
         'user_id'
     ];
+
+    
 }

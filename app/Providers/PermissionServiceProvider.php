@@ -1,10 +1,8 @@
-<?php
-
+<?php 
 namespace App\Providers;
-
-use Illuminate\Support\ServiceProvider;
 use App\Models\Permission;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\ServiceProvider;
 class PermissionServiceProvider extends ServiceProvider
 {
     /**
@@ -16,7 +14,6 @@ class PermissionServiceProvider extends ServiceProvider
     {
         //
     }
-
     /**
      * Bootstrap services.
      *

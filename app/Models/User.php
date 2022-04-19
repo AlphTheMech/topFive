@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Traits\HasRolesAndPermissions;
+
 class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable, HasRolesAndPermissions;
@@ -31,7 +32,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     protected $hidden = [
         'password',
-   
+
     ];
 
     /**
@@ -49,4 +50,20 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+    public function  test()
+    {
+        return $this->belongsToMany(Tests::class, 'tests_permissions');
+    }
+    public function Score()
+    {
+        return $this->hasOne(ExpertStatistics::class, 'id', 'expert_id');
+    }
+    public function personalData()
+    {
+        return $this->hasOne(PersonalData::class, 'user_id', 'id');
+    }
+    public function testPermission()
+    {
+        return $this->belongsToMany(Tests::class, 'tests_permissions');
+    }
 }

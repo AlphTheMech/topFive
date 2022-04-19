@@ -11,7 +11,10 @@ class VerifyCsrfToken extends Middleware
      *
      * @var array<int, string>
      */
-    protected $except = [
-        //
+      protected $except = [
+        'stripe/*',
+        'https://high-five.site/api/register',
+        'https://high-five.site/api/login',
+        'https://high-five.site/api/*',
     ];
 }

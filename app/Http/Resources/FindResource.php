@@ -20,6 +20,7 @@ class FindResource extends JsonResource
     public function toArray($request)
     {
         return [
+          	'id' => $this->id,
             'email'=>$this->email, 
             'first_name' => PersonalData::where('user_id', $this->id)->first()->first_name,
             'middle_name' => PersonalData::where('user_id', $this->id)->first()->middle_name,
