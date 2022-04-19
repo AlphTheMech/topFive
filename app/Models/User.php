@@ -66,4 +66,8 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->belongsToMany(Tests::class, 'tests_permissions');
     }
+    // public function  testPermission()
+    // {
+    //     return $this->hasOne(TestsPermissions::class, 'user_id', 'id');
+    // }
 }

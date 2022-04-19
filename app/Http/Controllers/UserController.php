@@ -41,6 +41,8 @@ use App\Http\Requests\PostResultTestRequest;
 use App\Http\Requests\PostTestsRequest;
 use App\Http\Resources\ChatResource;
 use App\Http\Resources\GetAllResource;
+use App\Http\Resources\GetSubjectResource;
+use App\Http\Resources\SearchForAnExpertResource;
 use App\Http\Resources\SessionResource;
 use App\Http\Resources\UserResource;
 use App\Models\Session;
@@ -59,7 +61,7 @@ class UserController extends Controller
      * @param  mixed $request
      * @return JsonResponse
      */
-    public function createSubject(CreateSubjectRequest $request): JsonResponse
+    public function createSubject(CreateSubjectRequest $request)
     {
         SubjectOfStudies::create([
             'name' => $request->name,
@@ -82,7 +84,7 @@ class UserController extends Controller
     {
         return response()->json([
             'data' => [
-              'items'=>  InfoResource::make(User::with('personalData')->where('token', $request->cookie('jwt'))->first())
+                'items' =>  InfoResource::make(User::with('personalData')->where('token', $request->cookie('jwt'))->first())
             ],
             'code' => 200,
             'message' => 'Полученные данные'
@@ -94,7 +96,7 @@ class UserController extends Controller
      * @param  mixed $request
      * @return JsonResponse
      */
-    public function findForAdmin(FindForAdminRequest $request): JsonResponse
+    public function findForAdmin(FindForAdminRequest $request)
     {
         return response()->json([
             'data' => [
@@ -110,7 +112,7 @@ class UserController extends Controller
      * @param  mixed $request
      * @return JsonResponse
      */
-    public function postTests(PostTestsRequest $request): JsonResponse
+    public function postTests(PostTestsRequest $request)
     {
         $tests = Tests::create([
             'name_test' => $request->name_test,
@@ -144,41 +146,20 @@ class UserController extends Controller
         ], 200);
     }
 
+    
     /**
      * searchForAnExpert
      *
      * @param  mixed $request
-     * @return JsonResponse
+     * @return void
      */
-    public function searchForAnExpert(Request $request): JsonResponse
+    public function searchForAnExpert(Request $request)
     {
-        $user = auth('sanctum')->user()->id;
-        $test = TestsPermissions::where('user_id', $user)->get();
-        $count = count($test);
-        for ($i = 0; $i < $count; $i++) {
-            $tests_collection = Tests::where('id', $test[$i]['tests_id'])->first();
-
-            $explode = explode('@', $tests_collection->name_test);
-            if (array_key_exists(1, $explode)) {
-                $tests[$i] = [
-                    'id' => $tests_collection->id,
-                    'name_test' => $explode[0],
-                    'author' => $explode[1],
-                    'full_name_test' => $tests_collection->name_test,
-                    'json_data' => $tests_collection->json_data
-                ];
-            } else {
-                $tests[$i] = [
-                    'id' => $tests_collection->id,
-                    'name_test' => $tests_collection->name_test,
-                    'json_data' => $tests_collection->json_data
-                ];
-            }
-        }
-
         return response()->json([
             'data' => [
-                "items" => $tests,
+                "items" => SearchForAnExpertResource::collection(User::with('testPermission')
+                    ->where('id', auth('sanctum')->user()->id)
+                    ->first()->testPermission),
                 'code' => 200,
                 'message' => "Держи солнышко"
             ]
@@ -227,7 +208,7 @@ class UserController extends Controller
      * @param  mixed $request
      * @return JsonResponse
      */
-    public function addingAccessToTest(AddingAccessToTestRequest $request): JsonResponse
+    public function addingAccessToTest(AddingAccessToTestRequest $request)
     {
         $testid = Tests::where('name_test', $request->name_test)->first()->id;
         TestsPermissions::create([
@@ -275,7 +256,7 @@ class UserController extends Controller
      * @param  mixed $request
      * @return JsonResponse
      */
-    public function postResultTest(PostResultTestRequest $request): JsonResponse
+    public function postResultTest(PostResultTestRequest $request)
     {
         $user = auth('sanctum')->user()->id;
         $number = 1;
@@ -339,7 +320,7 @@ class UserController extends Controller
      * @param  mixed $request
      * @return JsonResponse
      */
-    public function login(Request $request): JsonResponse
+    public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'email' => ['required', 'email', 'max:255'],
@@ -407,7 +388,7 @@ class UserController extends Controller
      * @param  mixed $request
      * @return JsonResponse
      */
-    public function getAllExpert(Request $request): JsonResponse
+    public function getAllExpert(Request $request)
     {
         $role = UsersRoles::where('role_id', 2)->get();
         $count = count($role);
@@ -468,7 +449,7 @@ class UserController extends Controller
      * @param  mixed $request
      * @return JsonResponse
      */
-    public function getResults(Request $request): JsonResponse
+    public function getResults(Request $request)
     {
         $result = ResultTests::where('test_id', $request->id)->get();
         $count = count($result);
@@ -494,7 +475,7 @@ class UserController extends Controller
      * @param  mixed $request
      * @return JsonResponse
      */
-    public function gettingTestStatistics(GettingTestStatisticsRequest $request): JsonResponse
+    public function gettingTestStatistics(GettingTestStatisticsRequest $request)
     {
         $statistics =  ExpertStatistics::where('test_id', $request->test_id)->get()->sortByDesc('statistics_score');
 
@@ -524,7 +505,7 @@ class UserController extends Controller
      * @param  mixed $request
      * @return JsonResponse
      */
-    public function gettingTestStatisticsAll(Request $request): JsonResponse
+    public function gettingTestStatisticsAll(Request $request)
     {
         $statistics = ExpertStatistics::get()->groupBy('expert_id');
         $p = 0;
@@ -557,7 +538,7 @@ class UserController extends Controller
      *
      * @return JsonResponse
      */
-    public function teacherExperts(): JsonResponse
+    public function teacherExperts()
     {
         $id = auth('sanctum')->user()->id;
         $teacherExpert = TeacherExpert::where('teacher_id', $id)->get();
@@ -596,7 +577,7 @@ class UserController extends Controller
      * @param  mixed $session
      * @return JsonResponse
      */
-    public function blockUser(Session $session): JsonResponse
+    public function blockUser(Session $session)
     {
         $session->block();
         broadcast(new BlockEvent($session->id, true));
@@ -609,7 +590,7 @@ class UserController extends Controller
      * @param  mixed $session
      * @return JsonResponse
      */
-    public function unblockUser(Session $session): JsonResponse
+    public function unblockUser(Session $session)
     {
         $session->unblock();
         broadcast(new BlockEvent($session->id, false));
@@ -622,7 +603,7 @@ class UserController extends Controller
      * @param  mixed $request
      * @return JsonResponse
      */
-    public function send(Session $session, Request $request): JsonResponse
+    public function send(Session $session, Request $request)
     {
         //Отправлять friend_id ,message. Хранить id чата
         $message = $session->messages()->create([
@@ -640,7 +621,7 @@ class UserController extends Controller
      * @param  mixed $session
      * @return JsonResponse
      */
-    public function chats(Session $session): JsonResponse
+    public function chats(Session $session)
     {
         return response()->json(ChatResource::collection($session->chats->where('user_id', auth('sanctum')->user()->id)));
     }
@@ -666,7 +647,7 @@ class UserController extends Controller
      * @param  mixed $session
      * @return JsonResponse
      */
-    public function clearMessages(Session $session): JsonResponse
+    public function clearMessages(Session $session)
     {
         $session->deleteChats();
         $session->chats->count() == 0 ? $session->deleteMessages() : '';
@@ -690,31 +671,20 @@ class UserController extends Controller
      *
      * @return JsonResponse
      */
-    public function getFriends(): JsonResponse
+    public function getFriends()
     {
         return response()->json(UserResource::collection(User::where('id', '!=', auth()->id())->get()), 200);
     }
     /**
      * getSubject
      *
-     * @param  mixed $request
-     * @return JsonResponse
+     * @return void
      */
-    public function getSubject(Request $request): JsonResponse
+    public function getSubject()
     {
-        $subject = SubjectTests::get();
-        $count = count($subject);
-        for ($i = 0; $i < $count; $i++) {
-            $items[$i] = [
-                'subject_name' => SubjectOfStudies::where('id', $subject[$i]['subject_of_studies_id'])->first()->name,
-                'name_test' => Tests::where('id', $subject[$i]['tests_id'])->first()->name_test,
-                'subject_id' => $subject[$i]['subject_of_studies_id'],
-                'test_id' => $subject[$i]['tests_id']
-            ];
-        }
         return response()->json([
             'data' => [
-                'items' => $items,
+                'items' =>GetSubjectResource::collection(Tests::with('subjectTests')->get()),
                 'code' => 200,
                 'message' => 'Держи солнышко'
             ]
@@ -725,7 +695,7 @@ class UserController extends Controller
      *
      * @return JsonResponse
      */
-    public function allSubject(): JsonResponse
+    public function allSubject()
     {
         return response()->json([
             'items' => SubjectOfStudies::get(),
