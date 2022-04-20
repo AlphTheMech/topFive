@@ -41,6 +41,7 @@ use App\Http\Requests\PostResultTestRequest;
 use App\Http\Requests\PostTestsRequest;
 use App\Http\Resources\ChatResource;
 use App\Http\Resources\GetAllResource;
+use App\Http\Resources\GetResultResource;
 use App\Http\Resources\GetSubjectResource;
 use App\Http\Resources\SearchForAnExpertResource;
 use App\Http\Resources\SessionResource;
@@ -353,12 +354,8 @@ class UserController extends Controller
         $cookie = cookie('jwt', $token, 60 * 24 * 3);
         return response()->json([
             'data' => [
-                'role' => Role::where('id', UsersRoles::where('user_id', $user->id)
-                    ->first()->role_id)
-                    ->first()->slug,
-                'permission' => Permission::where('id', UsersPermissions::where('user_id', $user->id)
-                    ->first()->permission_id)
-                    ->first()->slug,
+                'role' => auth()->user()->roles->first()->slug,
+                'permission' => auth()->user()->permissions->first()->slug,
                 'code' => 200,
                 'message' => "Аутентифицирован",
                 'token' => $token,
@@ -451,20 +448,13 @@ class UserController extends Controller
      */
     public function getResults(Request $request)
     {
-        $result = ResultTests::where('test_id', $request->id)->get();
-        $count = count($result);
-        for ($i = 0; $i < $count; $i++) {
-            $tests[$i] = [
-                'user' => User::where('id', $result[$i]['user_id'])->first(),
-                'subject' => SubjectOfStudies::where('id', $result[$i]['subject_of_studies_id'])->first()->name,
-                'name_test' => Tests::where('id', $result[$i]['test_id'])->first()->name_test,
-                // 'json_data' => Tests::where('id', $result[$i]['test_id'])->first()->json_data
-                'mark' => ResultTests::where('test_id', $result[$i]['test_id'])->first()->mark
-            ];
-        }
-
+       $result = GetResultResource::collection(ResultTests::with('testResult')
+       ->with('userResult')
+       ->with('subjectResult')
+       ->where('tests_id', $request->id)
+       ->get()) ;
         return response()->json([
-            'items' =>  $test = collect($tests)->sortByDesc('mark')->values()->all() ?? null,
+            'items' =>  $test = collect($result)->sortByDesc('mark')->values()->all() ?? null,
             'code' => 200,
             'message' => 'Данные об оценке успешно получены'
         ], 200);

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\SubjectOfStudies;
+use LDAP\Result;
 
 class Tests extends Model
 {
@@ -23,5 +24,10 @@ class Tests extends Model
     public function permissionTest()
     {
         return $this->belongsToMany(User::class, 'tests_permissions');
+    }
+    public function resultTest()
+    {
+        return $this->hasOne(ResultTests::class, 'tests_id', 'id');
+        // return $this->belongsTo(ResultTests::class, 'test_id');
     }
 }
