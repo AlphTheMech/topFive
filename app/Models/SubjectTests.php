@@ -9,7 +9,7 @@ class SubjectTests extends Model
     use HasFactory;
     protected $fillable = [
         'tests_id',
-        'subject_id'
+        'subject_of_studies_id'
     ];
 
 }

@@ -18,7 +18,7 @@ class GetAllResource extends JsonResource
         $explode = explode('@', $this->name_test);
         if (array_key_exists(1, $explode)) {
             return [
-                'test_id' => $this->id,
+                'id' => $this->id,
                 'subject_id' => $this->subjectTests->first()->id,
                 'name_test' => $explode[0],
                 'author' => $explode[1],
@@ -27,7 +27,7 @@ class GetAllResource extends JsonResource
             ];
         } else {
             return [
-                'test_id' => $this->id,
+                'id' => $this->id,
                 'subject_id' => $this->subjectTests->first()->id,
                 'name_test' => $this->name_test,
                 'json_data' => $this->json_data,

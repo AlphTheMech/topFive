@@ -39,6 +39,7 @@ use App\Http\Requests\FindForAdminRequest;
 use App\Http\Requests\GettingTestStatisticsRequest;
 use App\Http\Requests\PostResultTestRequest;
 use App\Http\Requests\PostTestsRequest;
+use App\Http\Resources\AllSubjectResource;
 use App\Http\Resources\ChatResource;
 use App\Http\Resources\GetAllResource;
 use App\Http\Resources\GetResultResource;
@@ -113,7 +114,7 @@ class UserController extends Controller
      * @param  mixed $request
      * @return JsonResponse
      */
-    public function postTests(PostTestsRequest $request)
+    public function postTests(Request $request)
     {
         $tests = Tests::create([
             'name_test' => $request->name_test,
@@ -121,7 +122,7 @@ class UserController extends Controller
         ]);
         SubjectTests::create([
             'tests_id' => $tests->id,
-            'subject_id' => SubjectOfStudies::where('name', $request->name)->first()->id,
+            'subject_of_studies_id' => SubjectOfStudies::where('name', $request->name)->first()->id,
         ]);
         return response()->json([
             'data' => [
@@ -147,7 +148,7 @@ class UserController extends Controller
         ], 200);
     }
 
-    
+
     /**
      * searchForAnExpert
      *
@@ -218,7 +219,7 @@ class UserController extends Controller
         ]);
 
         $user = auth('sanctum')->user()->id;
-        $expert = Role::where('id', UsersRoles::where('user_id', $user)->first()->role_id)->first()->slug;
+        $expert = auth()->user()->roles->first()->slug;
         $expertTeacher = Role::where('id', UsersRoles::where('user_id', $request->id)->first()->role_id)->first()->slug;
         if ($expert == 'expert') {
             ExpertUser::create([
@@ -448,11 +449,11 @@ class UserController extends Controller
      */
     public function getResults(Request $request)
     {
-       $result = GetResultResource::collection(ResultTests::with('testResult')
-       ->with('userResult')
-       ->with('subjectResult')
-       ->where('tests_id', $request->id)
-       ->get()) ;
+        $result = GetResultResource::collection(ResultTests::with('testResult')
+            ->with('userResult')
+            ->with('subjectResult')
+            ->where('tests_id', $request->id)
+            ->get());
         return response()->json([
             'items' =>  $test = collect($result)->sortByDesc('mark')->values()->all() ?? null,
             'code' => 200,
@@ -663,6 +664,14 @@ class UserController extends Controller
      */
     public function getFriends()
     {
+        // if (UserResource::collection(User::where('id', '!=', auth()->id())->get())) {
+        //     // return response()->json(UserResource::collection(User::where('id', '!=', auth()->id())->get()), 200);
+        // }
+        // $item = UserResource::collection(User::get()->where('session', '=', null));
+        // return $item;
+        // for ($i=0; $i < count($item); $i++) { 
+        //     print_r($item[$i]['online']) ;
+        // }
         return response()->json(UserResource::collection(User::where('id', '!=', auth()->id())->get()), 200);
     }
     /**
@@ -674,21 +683,41 @@ class UserController extends Controller
     {
         return response()->json([
             'data' => [
-                'items' =>GetSubjectResource::collection(Tests::with('subjectTests')->get()),
+                'items' => GetSubjectResource::collection(Tests::with('subjectTests')->get()),
                 'code' => 200,
                 'message' => 'Держи солнышко'
             ]
         ], 200);
     }
+    // public function getSubject(Request $request){
+    //     $subject= SubjectTests::get();
+    //     $count = count($subject);
+    //     for ($i = 0; $i < $count; $i++) {
+    //         $items[$i]=[
+    //          'subject_name'=>SubjectOfStudies::where('id', $subject[$i]['subject_id'])->first()->name,
+    //          'name_test'=>Tests::where('id', $subject[$i]['tests_id'])->first()->name_test,
+    //          'subject_id'=>$subject[$i]['subject_id'],
+    //          'test_id'=>$subject[$i]['tests_id']
+    //         ];
+    //     }
+    //      return response()->json([
+    //          'data'=>[
+    //              'items'=>$items,
+    //              'code'=>200,
+    //              'message'=>'Держи солнышко'
+    //          ]
+    //          ],200);
+    //  }
+
     /**
      * allSubject
      *
-     * @return JsonResponse
+     * @return void
      */
     public function allSubject()
     {
         return response()->json([
-            'items' => SubjectOfStudies::get(),
+            'items' => AllSubjectResource::collection(SubjectOfStudies::get()) ,
             'code' => 200,
             'message' => 'Держи солнышко'
         ], 200);
