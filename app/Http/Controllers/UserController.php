@@ -36,6 +36,7 @@ use App\Http\Requests\AddingAccessToTestRequest;
 use App\Http\Requests\CreateSubjectRequest;
 use App\Http\Requests\CreateTeacherRequest;
 use App\Http\Requests\FindForAdminRequest;
+use App\Http\Requests\GetAllTestsRequest;
 use App\Http\Requests\GettingTestStatisticsRequest;
 use App\Http\Requests\PostResultTestRequest;
 use App\Http\Requests\PostTestsRequest;
@@ -63,7 +64,7 @@ class UserController extends Controller
      * @param  mixed $request
      * @return JsonResponse
      */
-    public function createSubject(Request $request)
+    public function createSubject(CreateSubjectRequest $request)
     {
         SubjectOfStudies::create([
             'name' => $request->name,
@@ -98,7 +99,7 @@ class UserController extends Controller
      * @param  mixed $request
      * @return JsonResponse
      */
-    public function findForAdmin(Request $request)
+    public function findForAdmin(FindForAdminRequest $request)
     {
         return response()->json([
             'data' => [
@@ -114,7 +115,7 @@ class UserController extends Controller
      * @param  mixed $request
      * @return JsonResponse
      */
-    public function postTests(Request $request)
+    public function postTests(PostTestsRequest $request)
     {
         $tests = Tests::create([
             'name_test' => $request->name_test,
@@ -137,7 +138,7 @@ class UserController extends Controller
      * @param  mixed $request
      * @return void
      */
-    public function getAllTests(Request $request)
+    public function getAllTests(GetAllTestsRequest $request)
     {
         // return Tests::with('subjectTests')->get();
         return response()->json([
@@ -174,7 +175,7 @@ class UserController extends Controller
      * @param  mixed $request
      * @return void
      */
-    public function createTeacher(Request $request)
+    public function createTeacher(CreateTeacherRequest $request)
     {
         UsersRoles::where('user_id', User::where('email', $request->email)->first()->id)->update([
             'role_id' => Role::where('slug', $request->role)->first()->id,
@@ -211,7 +212,7 @@ class UserController extends Controller
      * @param  mixed $request
      * @return JsonResponse
      */
-    public function addingAccessToTest(Request $request)
+    public function addingAccessToTest(AddingAccessToTestRequest $request)
     {
         $testid = Tests::where('name_test', $request->name_test)->first()->id;
         TestsPermissions::create([
@@ -259,7 +260,7 @@ class UserController extends Controller
      * @param  mixed $request
      * @return JsonResponse
      */
-    public function postResultTest(Request $request)
+    public function postResultTest(PostResultTestRequest $request)
     {
         $user = auth('sanctum')->user()->id;
         $number = 1;
@@ -467,7 +468,7 @@ class UserController extends Controller
      * @param  mixed $request
      * @return JsonResponse
      */
-    public function gettingTestStatistics(Request $request)
+    public function gettingTestStatistics(GettingTestStatisticsRequest $request)
     {
         $statistics =  ExpertStatistics::where('test_id', $request->test_id)->get()->sortByDesc('statistics_score');
 
