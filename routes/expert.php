@@ -6,6 +6,7 @@ use App\Http\Controllers\MessengerController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\ResultTestController;
+use App\Http\Controllers\SubjectController;
 
 Route::group(['prefix' => 'expert', 'middleware' => ['auth:sanctum', 'role:expert']], function () {
     Route::get('/get_all_expert', [ExpertController::class, 'getAllExpert']); //Получение всех экспертов

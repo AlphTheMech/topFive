@@ -7,6 +7,7 @@ use App\Http\Controllers\MessengerController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\ResultTestController;
 use App\Http\Controllers\StatisticController;
+use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TestController;
 
 Route::group(['prefix' => 'teacher', 'middleware' => ['auth:sanctum', 'role:teacher']], function () {
