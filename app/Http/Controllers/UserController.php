@@ -61,19 +61,21 @@ class UserController extends Controller
      */
     public function createTeacher(CreateTeacherRequest $request)
     {
-        UsersRoles::where('user_id', User::where('email', $request->email)->first()->id)->update([
+        $user = auth('sanctum')->user()->id;
+        $user_request = User::where('email', $request->email)->first()->id;
+        UsersRoles::where('user_id', $user_request)->update([
             'role_id' => Role::where('slug', $request->role)->first()->id,
         ]);
 
-        UsersPermissions::where('user_id', User::where('email', $request->email)->first()->id)->update([
+        UsersPermissions::where('user_id', $user_request)->update([
             'permission_id' => Permission::where('slug', $request->permission)->first()->id,
         ]);
-        $user = auth('sanctum')->user()->id;
-        $teacher = Role::where('id', UsersRoles::where('user_id', $user)->first()->role_id)->first()->slug;
+
+        $teacher = auth('sanctum')->user()->roles->first()->slug;
         if ($request->role == 'expert' && $teacher == 'teacher') {
             TeacherExpert::create([
                 'teacher_id' => $user,
-                'expert_id' => User::where('email', $request->email)->first()->id,
+                'expert_id' => $user_request,
             ]);
             return response()->json([
                 'data' => [

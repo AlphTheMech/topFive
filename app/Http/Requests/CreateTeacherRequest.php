@@ -16,7 +16,7 @@ class CreateTeacherRequest extends ApiRequest
     public function rules()
     {
         return [
-            'email' => ['required', 'string', 'email', 'max:255'],
+            'email' => ['required', 'email', 'max:255'],
             'role' => ['required', 'string', 'max:255'],
             "permission" => ['required', 'string', 'max:255']
         ];

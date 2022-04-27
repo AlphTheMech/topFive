@@ -15,4 +15,17 @@ class TeacherExpert extends Model
         'expert_id',
         'teacher_id'
     ];
+
+    public function expert()
+    {
+        return $this->hasOne(ExpertStatistics::class, 'expert_id', 'expert_id');
+    }
+    public function personalDataExpert()
+    {
+        return $this->hasOne(PersonalData::class, 'user_id', 'expert_id');
+    }
+    public function emailExpert()
+    {
+        return $this->hasOne(User::class, 'id', 'expert_id');
+    }
 }
