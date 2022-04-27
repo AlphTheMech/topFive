@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\GetAllExpertResource;
 use App\Http\Resources\SearchForAnExpertResource;
 use App\Models\PersonalData;
 use App\Models\SubjectOfStudies;
@@ -22,59 +23,20 @@ class ExpertController extends Controller
      */
     public function getAllExpert(Request $request)
     {
-        $role = UsersRoles::where('role_id', 2)->get();
-        $count = count($role);
-        for ($i = 0; $i < $count; $i++) {
-            $user = User::where('id', $role[$i]['user_id'])->first();
-            $personal = PersonalData::where('user_id', $role[$i]['user_id'])->first();
-            $testAll = TestsPermissions::where('user_id', $role[$i]['user_id'])->get();
-            $countTest = count($testAll);
-            for ($j = 0; $j <  $countTest; $j++) {
-                $test_collection = Tests::where('id', $testAll[$j]['tests_id'])->first();
-                $subject_collection = SubjectOfStudies::where('id', SubjectTests::where('tests_id', $testAll[$j]['tests_id'])->first()->subject_of_studies_id)->first();
-                $aboba = explode('@', $test_collection->name_test);
-                if (array_key_exists(1, $aboba)) {
-                    $all[$i][$j] = [
-                        'name_test' => $aboba[0],
-                        'author' => $aboba[1],
-                        'full_name_test' => $test_collection->name_test,
-                        'test_id' => $test_collection->id,
-                        'subject_id' => $subject_collection->id,
-                        'subject_name' => $subject_collection->name,
-                    ];
-                } else {
-                    $all[$i][$j] = [
-                        'name_test' => $test_collection->name_test,
-                        'test_id' => $test_collection->id,
-                        'subject_id' => $subject_collection->id,
-                        'subject_name' => $subject_collection->name,
-                    ];
-                }
-            }
-
-            $tests[$i] = [
-                'user' => [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email
-                ],
-                'personal_data' => [
-                    'first_name' => $personal->first_name,
-                    'last_name' => $personal->last_name,
-                    'middle_name' => $personal->middle_name,
-                ],
-                'tests' => $all[$i]
-            ];
-        }
         return response()->json([
             'data' => [
-                'items' => $tests,
+                'items' => GetAllExpertResource::collection(User::with('roles')
+                    ->with('personalData')
+                    ->with('testPermission')
+                    ->whereHas('roles', function ($query) {
+                        $query->where('roles.id', 2);
+                    })->get()),
                 'code' => 200,
                 'message' => 'Держи солнышко'
             ]
         ], 200);
     }
-        /**
+    /**
      * searchForAnExpert
      *
      * @param  mixed $request
