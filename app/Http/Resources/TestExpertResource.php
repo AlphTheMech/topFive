@@ -18,8 +18,8 @@ class TestExpertResource extends JsonResource
         if (array_key_exists(1, $explode)) {
             return [
                 'id' => $this->id,
-                'subject_id' => $this->subjectTests->first()->id,
-                'subject_name' => $this->subjectTests->first()->name,
+                'subject_id' => $this->subjectTests->first()->id ?? null,
+                'subject_name' => $this->subjectTests->first()->name ?? null,
                 'name_test' => $explode[0],
                 'author' => $explode[1],
                 'full_name_test' => $this->name_test,
@@ -27,8 +27,8 @@ class TestExpertResource extends JsonResource
         } else {
             return [
                 'id' => $this->id,
-                'subject_id' => $this->subjectTests->first()->id,
-                'subject_name' => $this->subjectTests->first()->name,
+                'subject_id' => $this->subjectTests->first()->id ?? null,
+                'subject_name' => $this->subjectTests->first()->name ?? null,
                 'name_test' => $this->name_test,
             ];
         }
