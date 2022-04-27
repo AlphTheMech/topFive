@@ -11,7 +11,7 @@ class ResultTests extends Model
     protected $fillable = [
         'mark',
         'user_id',
-        'test_id',
+        'tests_id',
         'subject_id',
         'number_of_attempts'
     ];

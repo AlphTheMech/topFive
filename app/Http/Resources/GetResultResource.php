@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Models\PersonalData;
+use App\Models\User;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class GetResultResource extends JsonResource
@@ -17,7 +18,8 @@ class GetResultResource extends JsonResource
     {
         return [
             // 'user' =>$this->FIO($this->userResult->first()->id) ,
-            'user'=>$this->FIO($this->userResult->id),
+            'user' => $this->FIO($this->userResult->id),
+            'email' => $this->userEmail($this->userResult->id)->email,
             'subject' => $this->subjectResult->name,
             'name_test' => $this->testResult->name_test,
             'mark' => $this->mark
@@ -25,6 +27,10 @@ class GetResultResource extends JsonResource
     }
     protected function FIO($id)
     {
-       return PersonalData::where('user_id', $id)->first();
+        return PersonalData::where('user_id', $id)->first();
+    }
+    protected function userEmail($id)
+    {
+        return User::where('id', $id)->first();
     }
 }

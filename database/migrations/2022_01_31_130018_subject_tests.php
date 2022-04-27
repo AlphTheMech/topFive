@@ -15,7 +15,7 @@ class SubjectTests extends Migration
     {
       Schema::create('subject_tests', function(Blueprint $table){
            $table->unsignedBigInteger('tests_id');
-           $table->unsignedBigInteger('subject_id');
+           $table->unsignedBigInteger('subject_of_studies_id');
            $table->foreign('tests_id')->references('id')->on('tests');
            $table->foreign('subject_id')->references('id')->on('subject_of_studies');
            $table->primary(['tests_id','subject_id']);

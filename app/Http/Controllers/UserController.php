@@ -63,7 +63,7 @@ class UserController extends Controller
      * @param  mixed $request
      * @return JsonResponse
      */
-    public function createSubject(CreateSubjectRequest $request)
+    public function createSubject(Request $request)
     {
         SubjectOfStudies::create([
             'name' => $request->name,
@@ -98,7 +98,7 @@ class UserController extends Controller
      * @param  mixed $request
      * @return JsonResponse
      */
-    public function findForAdmin(FindForAdminRequest $request)
+    public function findForAdmin(Request $request)
     {
         return response()->json([
             'data' => [
@@ -139,6 +139,7 @@ class UserController extends Controller
      */
     public function getAllTests(Request $request)
     {
+        // return Tests::with('subjectTests')->get();
         return response()->json([
             'data' => [
                 'items' =>  GetAllResource::collection(Tests::with('subjectTests')->get()),
@@ -173,7 +174,7 @@ class UserController extends Controller
      * @param  mixed $request
      * @return void
      */
-    public function createTeacher(CreateTeacherRequest $request)
+    public function createTeacher(Request $request)
     {
         UsersRoles::where('user_id', User::where('email', $request->email)->first()->id)->update([
             'role_id' => Role::where('slug', $request->role)->first()->id,
@@ -210,7 +211,7 @@ class UserController extends Controller
      * @param  mixed $request
      * @return JsonResponse
      */
-    public function addingAccessToTest(AddingAccessToTestRequest $request)
+    public function addingAccessToTest(Request $request)
     {
         $testid = Tests::where('name_test', $request->name_test)->first()->id;
         TestsPermissions::create([
@@ -258,17 +259,17 @@ class UserController extends Controller
      * @param  mixed $request
      * @return JsonResponse
      */
-    public function postResultTest(PostResultTestRequest $request)
+    public function postResultTest(Request $request)
     {
         $user = auth('sanctum')->user()->id;
         $number = 1;
         $userHas = ResultTests::where('user_id', $user)->get();
         $userHasTest = $userHas->where('test_id', $request->test_id)->first();
         if ($userHas != null) {
-            $userHasTest = $userHas->where('test_id', $request->test_id)->first();
+            $userHasTest = $userHas->where('tests_id', $request->test_id)->first();
             if ($userHasTest != null) {
                 $usr = ResultTests::where('user_id', $user)->get();
-                $attempt = $usr->where('test_id', $request->test_id)->first();
+                $attempt = $usr->where('tests_id', $request->test_id)->first();
                 if ($attempt->number_of_attempts == 2) {
                     return response()->json([
                         'error' => [
@@ -293,7 +294,7 @@ class UserController extends Controller
             ResultTests::create([
                 'number_of_attempts' => $number,
                 'mark' => $request->mark,
-                'test_id' => $request->test_id,
+                'tests_id' => $request->test_id,
                 'subject_id' => $request->subject_id,
                 'user_id' => $user
             ]);
@@ -466,7 +467,7 @@ class UserController extends Controller
      * @param  mixed $request
      * @return JsonResponse
      */
-    public function gettingTestStatistics(GettingTestStatisticsRequest $request)
+    public function gettingTestStatistics(Request $request)
     {
         $statistics =  ExpertStatistics::where('test_id', $request->test_id)->get()->sortByDesc('statistics_score');
 
@@ -717,7 +718,7 @@ class UserController extends Controller
     public function allSubject()
     {
         return response()->json([
-            'items' => AllSubjectResource::collection(SubjectOfStudies::get()) ,
+            'items' => AllSubjectResource::collection(SubjectOfStudies::get()),
             'code' => 200,
             'message' => 'Держи солнышко'
         ], 200);
