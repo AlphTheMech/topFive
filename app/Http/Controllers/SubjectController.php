@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateSubjectRequest;
+use App\Http\Requests\UpdateSubjectRequest;
 use App\Http\Resources\AllSubjectResource;
 use App\Http\Resources\GetSubjectResource;
 use App\Models\SubjectOfStudies;
+use App\Models\SubjectTests;
 use App\Models\Tests;
 use Illuminate\Http\Request;
 
@@ -25,9 +27,31 @@ class SubjectController extends Controller
         return response()->json([
             'data' => [
                 'code' => 201,
-                'message' => "Информация о предмете обновлена"
+                'message' => "Информация о предмете успешно добавлена"
             ]
         ], 201);
+    }
+    public function updateSubject(SubjectOfStudies $subject, UpdateSubjectRequest $request)
+    {
+        $subject->update([
+            'name' => $request->name
+        ]);
+        return response()->json([
+            'data' => [
+                'code' => 200,
+                'message' => "Информация о предмете обновлена"
+            ]
+        ], 200);
+    }
+    public function deleteSubject(SubjectOfStudies $subject)
+    {
+        $subject->delete();
+        return response()->json([
+            'data' => [
+                'code' => 200,
+                'message' => "Информация о предмете успешно удалена"
+            ]
+        ], 200);
     }
     /**
      * getSubject

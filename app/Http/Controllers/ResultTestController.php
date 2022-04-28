@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\ApiException;
 use App\Http\Requests\GetResultsRequest;
 use App\Http\Resources\GetResultResource;
 use App\Http\Resources\PaginateCollection;
@@ -39,5 +40,20 @@ class ResultTestController extends Controller
             'code' => 200,
             'message' => 'Данные об оценке успешно получены'
         ], 200);
+    }
+    public function updateAttemptToTest(ResultTests $result)
+    {
+        if ($result->number_of_attempts == 2) {
+            $result->update([
+                'number_of_attempts' => 1,
+            ]);
+            return response()->json([
+                'data' => [
+                    'code' => 200,
+                    'message' => 'Данные о попытках теста успешно обновлены'
+                ]
+            ]);
+        }
+        return response()->json(throw new ApiException(422, 'Еще одна попытка есть'));
     }
 }

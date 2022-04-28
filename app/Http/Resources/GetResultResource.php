@@ -22,7 +22,8 @@ class GetResultResource extends JsonResource
             'email' => $this->userEmail($this->userResult->id)->email,
             'subject' => $this->subjectResult->name,
             'name_test' => $this->testResult->name_test,
-            'mark' => $this->mark
+            'mark' => $this->mark,
+            'id'=>$this->id,
         ];
     }
     protected function FIO($id)

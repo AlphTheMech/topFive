@@ -29,10 +29,9 @@ class ImageController extends Controller
             ]
         ], 201);
     }
-
     public function donwload(Request $request)
     {
-        $pathToFile=storage_path()."/app/public/to/file/".$request->file_name;
-        return response()->download($pathToFile);        
+        $pathToFile = storage_path() . "/app/public/to/file/" . $request->file_name;
+        return response()->download($pathToFile);
     }
 }

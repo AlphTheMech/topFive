@@ -17,8 +17,8 @@ class PostResultTestRequest extends ApiRequest
     {
         return [
             'mark' => ['required', 'integer'],
-            'test_id' => ['required'],
-            'subject_id' => ['required'],
+            'test_id' => 'required',
+            'subject_id' => 'required',
         ];
     }
 }

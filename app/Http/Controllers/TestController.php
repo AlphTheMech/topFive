@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AddingAccessToTestRequest;
+use App\Http\Requests\DeleteTestRequest;
 use App\Http\Requests\GetAllTestsRequest;
 use App\Http\Requests\PostResultTestRequest;
 use App\Http\Requests\PostTestsRequest;
+use App\Http\Requests\RemoveAccessToTestRequest;
 use App\Http\Resources\GetAllCollection;
 use App\Http\Resources\GetAllResource;
 use App\Models\ExpertStatistics;
@@ -41,11 +43,38 @@ class TestController extends Controller
         return response()->json([
             'data' => [
                 'code' => 201,
-                'message' => "Информация о тесте обновлена"
+                'message' => "Информация о тесте успешно добавлена"
             ]
         ], 201);
     }
-
+    public function updateTests(PostTestsRequest $request, Tests $test)
+    {
+        $test->update([
+            'name_test' => $request->name_test,
+            'json_data' => $request->json_data,
+        ]);
+        SubjectTests::where('tests_id')->update([
+            'tests_id' => $test,
+            'subject_of_studies_id' => SubjectOfStudies::where('name', $request->name)->first()->id,
+        ]);
+        return response()->json([
+            'data' => [
+                'code' => 200,
+                'message' => "Информация о тесте успешно обновлена"
+            ]
+        ], 200);
+    }
+    public function deleteTest(DeleteTestRequest $request)
+    {
+        SubjectTests::where('tests_id', $request->test_id)->delete();
+        Tests::where('id', $request->test_id)->delete();
+        return response()->json([
+            'data' => [
+                'code' => 200,
+                'message' => "Информация о тесте успешно удалена"
+            ]
+        ], 200);
+    }
     /**
      * getAllTests
      *
@@ -121,7 +150,26 @@ class TestController extends Controller
             ]
         ], 201);
     }
+    public function removeAccessToTest(RemoveAccessToTestRequest $request)
+    {
+        if ($request->id != auth('sanctum')->user()->id) {
+            TestsPermissions::where('tests_id', $request->test_id)->where('user_id', $request->user_id)->delete();
+            return response()->json([
+                'data' => [
+                    'code' => 200,
+                    'message' => 'Информация о доступе к тесту успешно удалена',
 
+                ]
+            ], 200);
+        }
+        return response()->json([
+            'data' => [
+                'code' => 422,
+                'message' => 'Ты че долбаеб?',
+                'errors' => 'Removing your own access'
+            ]
+        ], 422);
+    }
     /**
      * postResultTest
      *

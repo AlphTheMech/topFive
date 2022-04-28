@@ -39,4 +39,11 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth:sanctum', 'role:admin'
     Route::get('/get_all_subject', [SubjectController::class, 'getSubject']);
     Route::get('/all_subject', [SubjectController::class, 'allSubject']);
     Route::get('teacher_statistics', [StatisticController::class, 'teacherExperts']);
+    Route::patch('/update_test/{test}', [TestController::class, 'updateTests']); //Обновление теста
+    Route::delete('/remove_access_to_test', [TestController::class, 'removeAccessToTest']); //Удаление доступа к тесту 
+    Route::patch('/update_subject/{subject}', [SubjectController::class, 'updateSubject']); //Обновление предмета
+    Route::delete('/delete_subject/{subject}', [SubjectController::class, 'deleteSubject']); //Удаление предмета
+    Route::delete('/delete_test', [TestController::class, 'deleteTest']); //Удаление теста
+    Route::patch('/update_attempt/{result}', [ResultTestController::class, 'updateAttemptToTest']);//Обновление попыток теста 
+    
 });

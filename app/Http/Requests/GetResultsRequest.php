@@ -14,7 +14,7 @@ class GetResultsRequest extends ApiRequest
     public function rules()
     {
         return [
-            'id' => ['required'],
+            'id' => 'required',
         ];
     }
 }
