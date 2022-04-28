@@ -21,16 +21,27 @@ class ExpertController extends Controller
      * @param  mixed $request
      * @return JsonResponse
      */
-    public function getAllExpert(Request $request)
+    public function getAllExpert()
     {
+        $expert = GetAllExpertResource::collection(User::with('roles')
+            ->with('personalData')
+            ->with('testPermission')
+            ->whereHas('roles', function ($query) {
+                $query->where('roles.id', 2);
+            })->paginate(10));
         return response()->json([
             'data' => [
-                'items' => GetAllExpertResource::collection(User::with('roles')
-                    ->with('personalData')
-                    ->with('testPermission')
-                    ->whereHas('roles', function ($query) {
-                        $query->where('roles.id', 2);
-                    })->get()),
+                'items' => $expert,
+                'paginate' => [
+                    'total' => $expert->total(),
+                    'per_page' => $expert->perPage(),
+                    'current_page' => $expert->currentPage(),
+                    'last_page' => $expert->lastPage(),
+                    'from' => $expert->firstItem(),
+                    'to' => $expert->lastItem(),
+                    'count' => $expert->count(),
+                    'total_pages' => $expert->lastPage()
+                ],
                 'code' => 200,
                 'message' => 'Держи солнышко'
             ]

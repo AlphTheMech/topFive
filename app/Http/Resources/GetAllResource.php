@@ -32,7 +32,7 @@ class GetAllResource extends JsonResource
                 'subject_id' => $this->subjectTests->first()->id ?? null,
                 'subject_name' => $this->subjectTests->first()->name ?? null,
                 'name_test' => $this->name_test,
-                'json_data' => $this->json_data,
+                'json_data' => $this->json_data,        
             ];
         }
     }

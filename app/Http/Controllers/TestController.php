@@ -6,6 +6,7 @@ use App\Http\Requests\AddingAccessToTestRequest;
 use App\Http\Requests\GetAllTestsRequest;
 use App\Http\Requests\PostResultTestRequest;
 use App\Http\Requests\PostTestsRequest;
+use App\Http\Resources\GetAllCollection;
 use App\Http\Resources\GetAllResource;
 use App\Models\ExpertStatistics;
 use App\Models\ExpertUser;
@@ -44,7 +45,7 @@ class TestController extends Controller
             ]
         ], 201);
     }
-    
+
     /**
      * getAllTests
      *
@@ -53,16 +54,26 @@ class TestController extends Controller
      */
     public function getAllTests(GetAllTestsRequest $request)
     {
-        // return Tests::with('subjectTests')->get();
+        $tests = GetAllResource::collection(Tests::with('subjectTests')->paginate(10));
         return response()->json([
             'data' => [
-                'items' =>  GetAllResource::collection(Tests::with('subjectTests')->get()),
+                'items' =>  $tests,
+                'paginate' => [
+                    'total' => $tests->total(),
+                    'per_page' => $tests->perPage(),
+                    'current_page' => $tests->currentPage(),
+                    'last_page' => $tests->lastPage(),
+                    'from' => $tests->firstItem(),
+                    'to' => $tests->lastItem(),
+                    'count' => $tests->count(),
+                    'total_pages' => $tests->lastPage()
+                ],
                 'code' => 200,
                 'message' => "Держи солнышко"
             ]
         ], 200);
     }
-        /**
+    /**
      * addingAccessToTest
      *
      * @param  mixed $request
@@ -110,7 +121,7 @@ class TestController extends Controller
             ]
         ], 201);
     }
-    
+
     /**
      * postResultTest
      *

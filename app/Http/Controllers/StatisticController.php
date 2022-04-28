@@ -23,16 +23,28 @@ class StatisticController extends Controller
      */
     public function teacherExperts()
     {
+        $statistic = TeacherExpertsResource::collection(TeacherExpert::with('expert')
+            ->with('personalDataExpert')
+            ->with('emailExpert')
+            ->where('teacher_id', auth('sanctum')->user()->id)
+            ->paginate(10)
+           );
         return response()->json([
             'data' => [
-                'items' => collect(TeacherExpertsResource::collection(TeacherExpert::with('expert')
-                    ->with('personalDataExpert')
-                    ->with('emailExpert')
-                    ->get()
-                    ->where('teacher_id', auth('sanctum')->user()->id)))
+                'items' => collect($statistic)
                     ->sortByDesc('statistics_score')
                     ->values()
                     ->all() ?? null,
+                'paginate' => [
+                    'total' => $statistic->total(),
+                    'per_page' => $statistic->perPage(),
+                    'current_page' => $statistic->currentPage(),
+                    'last_page' => $statistic->lastPage(),
+                    'from' => $statistic->firstItem(),
+                    'to' => $statistic->lastItem(),
+                    'count' => $statistic->count(),
+                    'total_pages' => $statistic->lastPage()
+                ],
                 'code' => 201,
                 'message' => 'Держи солнышко'
             ]
@@ -80,11 +92,24 @@ class StatisticController extends Controller
      */
     public function gettingTestStatistics(GettingTestStatisticsRequest $request)
     {
+        $statistic = GettingTestStatisticsResource::collection(
+            ExpertStatistics::where('test_id', $request->test_id)
+                ->paginate(10)
+        );
         return response()->json([
             'data' => [
-                'items' => collect(GettingTestStatisticsResource::collection(ExpertStatistics::where('test_id', $request->test_id)
-                    ->get()))
+                'items' => collect($statistic)
                     ->sortByDesc('statistics_score')->values()->all() ?? null,
+                'paginate' => [
+                    'total' => $statistic->total(),
+                    'per_page' => $statistic->perPage(),
+                    'current_page' => $statistic->currentPage(),
+                    'last_page' => $statistic->lastPage(),
+                    'from' => $statistic->firstItem(),
+                    'to' => $statistic->lastItem(),
+                    'count' => $statistic->count(),
+                    'total_pages' => $statistic->lastPage()
+                ],
                 'code' => 201,
                 'message' => 'Держи солнышко'
             ]
