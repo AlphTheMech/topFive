@@ -166,7 +166,7 @@ class TestController extends Controller
             'data' => [
                 'code' => 422,
                 'message' => 'Ты че долбаеб?',
-                'errors' => 'Removing your own access'
+                'error' => 'Removing your own access'
             ]
         ], 422);
     }

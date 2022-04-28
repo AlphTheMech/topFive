@@ -8,20 +8,20 @@ use Illuminate\Database\Eloquent\Model;
 class ExpertStatistics extends Model
 {
     use HasFactory;
-    
+
     /**
      * table
      *
      * @var string
      */
-    protected $table='expert_statistics';
-    
+    protected $table = 'expert_statistics';
+
     /**
      * fillable
      *
      * @var array
      */
-    protected $fillable=[
+    protected $fillable = [
         'test_id',
         'expert_id',
         'statistics_score'
