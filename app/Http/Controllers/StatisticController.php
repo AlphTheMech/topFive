@@ -78,7 +78,7 @@ class StatisticController extends Controller
         }
         return response()->json([
             'data' => [
-                'items' => $user = collect($users)->sortByDesc('statistics_score')->values()->all() ?? null,
+                'items' => collect($users)->sortByDesc('statistics_score')->values()->all() ?? null,
                 'code' => 201,
                 'message' => 'Держи солнышко'
             ]
