@@ -14,10 +14,11 @@ class GetSubjectResource extends JsonResource
      */
     public function toArray($request)
     {
+        $subject = $this->subjectTests->first();
         return [
-            'subject_name' => $this->subjectTests->first()->name,
+            'subject_name' =>  $subject->name,
             'name_test' => $this->name_test,
-            'subject_id' => $this->subjectTests->first()->id,
+            'subject_id' =>  $subject->id,
             'test_id' => $this->id
 
         ];

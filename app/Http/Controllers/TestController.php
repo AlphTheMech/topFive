@@ -81,9 +81,11 @@ class TestController extends Controller
      * @param  mixed $request
      * @return void
      */
-    public function getAllTests(GetAllTestsRequest $request)
+    public function getAllTests(Request $request)
     {
-        $tests = GetAllResource::collection(Tests::with('subjectTests')->paginate(10));
+        $request->name ? $tests = GetAllResource::collection(Tests::with('subjectTests')->whereHas('subjectTests', function ($query) use ($request) {
+            $query->where('name', $request->name);
+        })->paginate(10)) : $tests = GetAllResource::collection(Tests::with('subjectTests')->paginate(10));
         return response()->json([
             'data' => [
                 'items' =>  $tests,
@@ -104,7 +106,7 @@ class TestController extends Controller
     }
     /**
      * addingAccessToTest
-     *
+     *  
      * @param  mixed $request
      * @return JsonResponse
      */

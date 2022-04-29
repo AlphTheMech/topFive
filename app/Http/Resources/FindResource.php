@@ -19,16 +19,20 @@ class FindResource extends JsonResource
      */
     public function toArray($request)
     {
+        $fio = $this->FIO($this->id);
+        $user = auth('sanctum')->user();
         return [
-          	'id' => $this->id,
-            'email'=>$this->email, 
-            'first_name' => PersonalData::where('user_id', $this->id)->first()->first_name,
-            'middle_name' => PersonalData::where('user_id', $this->id)->first()->middle_name,
-            'last_name' =>PersonalData::where('user_id', $this->id)->first()->last_name,
-            'role_slug'=>Role::where('id',UsersRoles::where('user_id', $this->id)->first()->role_id)->first()->slug,
-            // 'role_name'=>Role::where('id',UsersRoles::where('user_id', $this->id)->first()->role_id)->first()->name,
-            // 'permission_name'=>Permission::where('id',UsersPermissions::where('user_id', $this->id)->first()->permission_id)->first()->name,
-            'permission_slug'=>Permission::where('id',UsersPermissions::where('user_id', $this->id)->first()->permission_id)->first()->slug,
+            'id' => $this->id,
+            'email' => $this->email,
+            'first_name' => $fio->first_name,
+            'middle_name' => $fio->middle_name,
+            'last_name' => $fio->last_name,
+            'role_slug' => $user->roles->first()->slug,
+            'permission_slug' => $user->permissions->first()->slug,
         ];
+    }
+    protected function FIO($id)
+    {
+        return PersonalData::where('user_id', $id)->first();
     }
 }
