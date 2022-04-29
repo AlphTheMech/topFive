@@ -28,4 +28,5 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum', 'role:user']]
     Route::post('/accept_result', [TestController::class, 'postResultTest']); //Добавление результатов прохождения теста
     Route::get('/get_all_expert', [ExpertController::class, 'getAllExpert']); //Получение всех экспертов
     Route::get('/all_subject', [SubjectController::class, 'allSubject']);
+    Route::patch('/update_user_info', [UserController::class, 'updateInfoUser']); //Обновление персональных данных
 });

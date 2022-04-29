@@ -17,7 +17,8 @@ use App\Http\Resources\InfoResource;
 use App\Models\TeacherExpert;
 use App\Http\Requests\CreateTeacherRequest;
 use App\Http\Requests\FindForAdminRequest;
-
+use App\Http\Requests\UpdateUserInfoRequest;
+use App\Models\PersonalData;
 
 class UserController extends Controller
 {
@@ -35,6 +36,20 @@ class UserController extends Controller
             ],
             'code' => 200,
             'message' => 'Полученные данные'
+        ], 200);
+    }
+    public function updateInfoUser(UpdateUserInfoRequest $request)
+    {
+        $user = auth('sanctum')->user()->id;
+        PersonalData::where('user_id', $user)->update($request->all());
+        User::where('id', $user)->update([
+            'name' => $request->first_name,
+        ]);
+        return response()->json([
+            'data' => [
+                'code' => 200,
+                'message' => 'Информация о ФИО успешно обновлена'
+            ]
         ], 200);
     }
     /**

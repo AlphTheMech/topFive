@@ -31,5 +31,6 @@ Route::group(['prefix' => 'expert', 'middleware' => ['auth:sanctum', 'role:exper
     Route::get('/get_all_subject', [SubjectController::class, 'getSubject']);
     Route::get('/find_for_admin', [UserController::class, 'findForAdmin']);
     Route::get('/all_subject', [SubjectController::class, 'allSubject']);
+    Route::patch('/update_user_info', [UserController::class, 'updateInfoUser']);//Обновление персональных данных
   });
   
