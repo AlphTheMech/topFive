@@ -18,7 +18,7 @@ class ExpertStatistics extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults();
-        // Chain fluent methods for configuration options
+        
     }
 
     public static $logName = 'Данные статистики экспертов';

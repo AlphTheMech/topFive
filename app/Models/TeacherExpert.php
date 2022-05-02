@@ -20,7 +20,7 @@ class TeacherExpert extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults();
-        // Chain fluent methods for configuration options
+        
     }
     
     public static $logName = 'Данные экспертов учителей';

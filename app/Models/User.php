@@ -22,7 +22,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults();
-        // Chain fluent methods for configuration options
+        
     }
 
     public static $logName = 'Пользователь регистрация/авторизация';

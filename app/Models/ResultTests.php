@@ -14,9 +14,9 @@ class ResultTests extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults();
-        // Chain fluent methods for configuration options
+        
     }
-    
+
     public static $logAttributes = [
         'mark', 'user_id', 'tests_id', 'subject_id','number_of_attempts'
     ];

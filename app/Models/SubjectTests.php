@@ -18,7 +18,7 @@ class SubjectTests extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults();
-        // Chain fluent methods for configuration options
+        
     }
 
     public static $logName = 'Данные предметов к тестам';
