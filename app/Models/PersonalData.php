@@ -4,11 +4,19 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class PersonalData extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults();
+        // Chain fluent methods for configuration options
+    }
+    
     public static $logAttributes = [
         'first_name', 'middle_name', 'last_name', 'user_id'
     ];

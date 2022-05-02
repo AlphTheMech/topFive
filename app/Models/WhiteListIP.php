@@ -5,9 +5,12 @@ namespace App\Models;
 // use App\Models\Storage\User\Employee;
 // use App\Models\Storage\User\User;
 use Illuminate\Database\Eloquent\Model;
-
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 class WhiteListIP extends Model
 {
+    use LogsActivity;
+
     public const FLD_ID = 'id';
     public const FLD_RESPONSIBLE_USER_ID = 'responsible_user_id';
     public const FLD_EMPLOYEE_ID = 'employee_id';
@@ -18,6 +21,12 @@ class WhiteListIP extends Model
     public static $logAttributes = [
         'user_id', 'ip_address'
     ];
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults();
+        // Chain fluent methods for configuration options
+    }
+
 
     public static $logName = 'IP адреса админов';
 
@@ -50,5 +59,4 @@ class WhiteListIP extends Model
     {
         return $this->hasOne(PersonalData::class, 'user_id', 'user_id');
     }
-    
 }

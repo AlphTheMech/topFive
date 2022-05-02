@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class TeacherExpert extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
     protected $table = 'teacher_expert';
 
@@ -15,6 +17,12 @@ class TeacherExpert extends Model
         'expert_id', 'teacher_id'
     ];
 
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults();
+        // Chain fluent methods for configuration options
+    }
+    
     public static $logName = 'Данные экспертов учителей';
 
     protected $fillable = [

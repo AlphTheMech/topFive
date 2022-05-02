@@ -4,13 +4,23 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Session extends Model
 {
+    use LogsActivity;
+    
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults();
+        // Chain fluent methods for configuration options
+    }
+
     public static $logAttributes = [
         'user2_id', 'user1_id', 'is_block', 'blocked_by'
     ];
-    
+
     public static $logName = 'Данные чатов пользователей';
 
     protected $guarded = [];

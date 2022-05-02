@@ -9,15 +9,21 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Traits\HasRolesAndPermissions;
 use Spatie\Activitylog\Traits\LogsActivity;
-
+use Spatie\Activitylog\LogOptions;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRolesAndPermissions;
+    use HasApiTokens, HasFactory, Notifiable, HasRolesAndPermissions, LogsActivity;
 
     public static $logAttributes = [
         'email', 'name', 'avatar', 'ip_address'
     ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults();
+        // Chain fluent methods for configuration options
+    }
 
     public static $logName = 'Пользователь регистрация/авторизация';
 
@@ -71,7 +77,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasOne(ExpertStatistics::class, 'id', 'expert_id');
     }
-    
+
     public function personalData()
     {
         return $this->hasOne(PersonalData::class, 'user_id', 'id');
