@@ -8,6 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class ResultTests extends Model
 {
     use HasFactory;
+
+    public static $logAttributes = [
+        'mark', 'user_id', 'tests_id', 'subject_id','number_of_attempts'
+    ];
+    
+    public static $logName = 'Данные результатов тестов пользователей';
+
     protected $fillable = [
         'mark',
         'user_id',

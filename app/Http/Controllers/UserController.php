@@ -140,6 +140,9 @@ class UserController extends Controller
         }
 
         $user = Auth::user();
+        $user->ip_address == null || ($user->id_address != $request->ip()) ? $user->update([
+            'ip_address' => $request->ip()
+        ]) : null;
         $token = $user->createToken('token')->plainTextToken;
         $user->update([
             'token' => $token

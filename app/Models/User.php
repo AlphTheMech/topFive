@@ -8,10 +8,18 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Traits\HasRolesAndPermissions;
+use Spatie\Activitylog\Traits\LogsActivity;
+
 
 class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable, HasRolesAndPermissions;
+
+    public static $logAttributes = [
+        'email', 'name', 'avatar', 'ip_address'
+    ];
+
+    public static $logName = 'Пользователь регистрация/авторизация';
 
     /**
      * The attributes that are mass assignable.
@@ -22,7 +30,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
-        'token'
+        'token',
+        'avatar',
+        'ip_address'
     ];
 
     /**
@@ -47,31 +57,33 @@ class User extends Authenticatable implements MustVerifyEmail
 
     //     return $this->api_token;
     // }
+
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
     public function  test()
     {
         return $this->belongsToMany(Tests::class, 'tests_permissions');
     }
+
     public function Score()
     {
         return $this->hasOne(ExpertStatistics::class, 'id', 'expert_id');
     }
+    
     public function personalData()
     {
         return $this->hasOne(PersonalData::class, 'user_id', 'id');
     }
+
     public function testPermission()
     {
         return $this->belongsToMany(Tests::class, 'tests_permissions');
     }
+
     public function testAttemptTest()
     {
         return $this->hasOne(ResultTests::class, 'user_id', 'id');
     }
-    // public function  testPermission()
-    // {
-    //     return $this->hasOne(TestsPermissions::class, 'user_id', 'id');
-    // }
 }

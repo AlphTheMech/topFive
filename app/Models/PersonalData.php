@@ -8,12 +8,17 @@ use Illuminate\Database\Eloquent\Model;
 class PersonalData extends Model
 {
     use HasFactory;
-    protected $fillable=[
+
+    public static $logAttributes = [
+        'first_name', 'middle_name', 'last_name', 'user_id'
+    ];
+    
+    public static $logName = 'Данные персональных данных пользователей';
+
+    protected $fillable = [
         'first_name',
         'middle_name',
-        'last_name', 
+        'last_name',
         'user_id'
     ];
-
-    
 }

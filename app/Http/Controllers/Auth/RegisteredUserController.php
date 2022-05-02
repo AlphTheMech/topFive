@@ -24,9 +24,9 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-      public function store(Request $request)
+    public function store(Request $request)
     {
-    	// return response()->json([$request->all()]);
+        // return response()->json([$request->all()]);
 
         $validator = Validator::make($request->all(), [
             'first_name' => ['required', 'string', 'max:255'],
@@ -50,9 +50,10 @@ class RegisteredUserController extends Controller
             'name' => $request->first_name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'ip_address' => $request->ip()
         ]);
-      
-		 //$user->givePermissionsTo('administration');
+
+        //$user->givePermissionsTo('administration');
         event(new Registered($user));
 
         Auth::login($user);
@@ -73,39 +74,8 @@ class RegisteredUserController extends Controller
         $cookie = cookie('jwt', $token, 60 * 24 * 3);
         return response()->json([
             'token' => $token,
-            'code'=>201
-            
-        ],201)->withCookie($cookie);
-    }
-    //     public function store(Request $request){
-    //     $validator = Validator::make($request->all(), [
-    //         'first_name' => ['required', 'string', 'max:255'],
-    //         'middle_name' => ['required', 'string', 'max:255'],
-    //         'last_name' => ['required', 'string', 'max:255'],
-    //         'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-    //         'password' => ['required', Rules\Password::defaults()],
-    //     ]);
+            'code' => 201
 
-    //     if ($validator->fails()) {
-    //         return response()->json([
-    //             'error' => [
-    //                 'code' => 422,
-    //                 'errors' => $validator->errors(),
-    //                 'message' => 'Ошибка валидации'
-    //             ]
-    //         ], 422);
-    //     }
-    //     $user = User::create([
-    //         'name' => $request->first_name,
-    //         'email' => $request->email,
-    //         'password' => Hash::make($request->password),
-    //     ]);
-    //     PersonalData::create([
-    //         'first_name' => $request->first_name,
-    //         'middle_name' => $request->middle_name,
-    //         'last_name' => $request->last_name,
-    //         'user_id' => $user->id,
-    //     ]);
-    // //     return response()->json()->setStatusCode(204);
-    // }
+        ], 201)->withCookie($cookie);
+    }
 }

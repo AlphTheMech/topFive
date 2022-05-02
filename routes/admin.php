@@ -5,14 +5,22 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MessengerController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ImageController;
+use App\Http\Controllers\LoggingController;
 use App\Http\Controllers\ResultTestController;
 use App\Http\Controllers\StatisticController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TestController;
+use App\Http\Controllers\WhiteListIpController;
 
 Route::group(['prefix' => 'admin', 'middleware' => ['auth:sanctum', 'role:admin']], function () {
-    Route::group(['namespace' => 'Api', 'middleware' => 'ip'], function () {
+    Route::group(['middleware' => 'ip', 'prefix' => 'ip'], function () {
+        Route::get('/logging', [LoggingController::class, 'getLogging']);
+        Route::post('/post', [WhiteListIpController::class, 'postIp']);
+        Route::get('/get', [WhiteListIpController::class, 'getIp']);
+        Route::patch('/update/{id}', [WhiteListIpController::class, 'updateIp']);
+        Route::delete('/delete/{id}', [WhiteListIpController::class, 'deleteIp']);
     });
+    Route::get('/get', [WhiteListIpController::class, 'getIp']);
     Route::post('getFriends', [MessengerController::class, 'getFriends']); //Получение чатов
     Route::prefix('session')->group(function () {
         Route::post('/create', [MessengerController::class, 'createSession']); //Создание чата
@@ -45,5 +53,5 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth:sanctum', 'role:admin'
     Route::delete('/delete_subject/{subject}', [SubjectController::class, 'deleteSubject']); //Удаление предмета
     Route::delete('/delete_test', [TestController::class, 'deleteTest']); //Удаление теста
     Route::patch('/update_attempt/{result}', [ResultTestController::class, 'updateAttemptToTest']); //Обновление попыток теста 
-    Route::patch('/update_user_info', [UserController::class, 'updateInfoUser']);//Обновление персональных данных
+    Route::patch('/update_user_info', [UserController::class, 'updateInfoUser']); //Обновление персональных данных
 });

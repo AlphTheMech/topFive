@@ -6,14 +6,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Chat extends Model
-{    
+{
     /**
      * guarded
      *
      * @var array
      */
     protected $guarded = [];
-    
+
     /**
      * casts
      *
@@ -22,7 +22,7 @@ class Chat extends Model
     protected $casts = [
         'read_at' => 'datetime'
     ];
-    
+
     /**
      * message
      *

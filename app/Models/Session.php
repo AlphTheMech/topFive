@@ -7,6 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Session extends Model
 {
+    public static $logAttributes = [
+        'user2_id', 'user1_id', 'is_block', 'blocked_by'
+    ];
+    
+    public static $logName = 'Данные чатов пользователей';
+
     protected $guarded = [];
 
     public function chats()

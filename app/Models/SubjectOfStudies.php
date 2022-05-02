@@ -9,6 +9,13 @@ use App\Models\Tests;
 class SubjectOfStudies extends Model
 {
     use HasFactory;
+
+    public static $logAttributes = [
+        'name'
+    ];
+    
+    public static $logName = 'Данные предметов';
+
     protected $fillable = [
         'name',
     ];

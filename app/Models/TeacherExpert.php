@@ -11,6 +11,12 @@ class TeacherExpert extends Model
 
     protected $table = 'teacher_expert';
 
+    public static $logAttributes = [
+        'expert_id', 'teacher_id'
+    ];
+
+    public static $logName = 'Данные экспертов учителей';
+
     protected $fillable = [
         'expert_id',
         'teacher_id'

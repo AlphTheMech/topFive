@@ -10,6 +10,13 @@ use LDAP\Result;
 class Tests extends Model
 {
     use HasFactory;
+    
+    public static $logAttributes = [
+        'name_test', 'json_data'
+    ];
+
+    public static $logName = 'Данные тестов';
+
     protected $fillable = [
         'name_test',
         'json_data'

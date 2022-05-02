@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\ApiException;
 use App\Http\Requests\AddingAccessToTestRequest;
 use App\Http\Requests\DeleteTestRequest;
 use App\Http\Requests\GetAllTestsRequest;
@@ -164,13 +165,14 @@ class TestController extends Controller
                 ]
             ], 200);
         }
-        return response()->json([
-            'data' => [
-                'code' => 422,
-                'message' => 'Ты че долбаеб?',
-                'error' => 'Removing your own access'
-            ]
-        ], 422);
+        throw new ApiException(422, 'Ты че долбаеб?', 'Removing your own access');
+        // return response()->json([
+        //     'data' => [
+        //         'code' => 422,
+        //         'message' => 'Ты че долбаеб?',
+        //         'error' => 'Removing your own access'
+        //     ]
+        // ], 422);
     }
     /**
      * postResultTest
