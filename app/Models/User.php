@@ -16,7 +16,12 @@ class User extends Authenticatable implements MustVerifyEmail
     use HasApiTokens, HasFactory, Notifiable, HasRolesAndPermissions, LogsActivity;
 
     public static $logAttributes = [
-        'email', 'name', 'avatar', 'ip_address', 'token'
+        'email', 
+        'name', 
+        'avatar', 
+        'ip_address', 
+        'token', 
+        'email_verified_at'
     ];
 
     public function getActivitylogOptions(): LogOptions

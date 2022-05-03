@@ -21,6 +21,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth:sanctum', 'role:admin'
         Route::delete('/delete/{id}', [WhiteListIpController::class, 'deleteIp']);
         Route::delete('/logging/delete', [LoggingController::class, 'deleteAllLog']);
     });
+    // Route::get('/logging', [LoggingController::class, 'getLogging']);
     Route::get('/get', [WhiteListIpController::class, 'getIp']);
     Route::post('getFriends', [MessengerController::class, 'getFriends']); //Получение чатов
     Route::prefix('session')->group(function () {
