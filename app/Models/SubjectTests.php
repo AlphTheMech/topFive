@@ -11,6 +11,8 @@ class SubjectTests extends Model
 {
     use HasFactory, LogsActivity;
 
+    protected $primaryKey = 'tests_id';
+
     public static $logAttributes = [
         'tests_id', 'subject_of_studies_id'
     ];

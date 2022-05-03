@@ -9,18 +9,18 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class TeacherExpert extends Model
 {
-    use HasFactory, LogsActivity;
+    use HasFactory;
 
     protected $table = 'teacher_expert';
 
-    public static $logAttributes = [
-        'expert_id', 'teacher_id'
-    ];
+    // public static $logAttributes = [
+    //     'expert_id', 'teacher_id'
+    // ];
 
-    public function getActivitylogOptions(): LogOptions
-    {
-        return LogOptions::defaults();
-    }
+    // public function getActivitylogOptions(): LogOptions
+    // {
+    //     return LogOptions::defaults();
+    // }
     
     public static $logName = 'Данные экспертов учителей';
 

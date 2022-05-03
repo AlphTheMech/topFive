@@ -10,6 +10,8 @@ class UsersRoles extends Model
 {
     use HasFactory, LogsActivity;
     
+    protected $primaryKey = 'user_id';
+
     protected $fillable=[
         'user_id',
         'role_id'

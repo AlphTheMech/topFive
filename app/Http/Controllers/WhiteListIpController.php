@@ -13,7 +13,8 @@ class WhiteListIpController extends Controller
     {
         WhiteListIP::create([
             'ip_address' => $request->ip_address,
-            'user_id' => $request->id
+            'user_id' => $request->id,
+            'admin_id'=>auth('sanctum')->user()->id
         ]);
 
         return response()->json([

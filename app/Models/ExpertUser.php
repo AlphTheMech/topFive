@@ -14,6 +14,8 @@ class ExpertUser extends Model
         'test_id', 'user_id', 'expert_id',
     ];
     
+    protected $primaryKey = 'user_id';
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults();
