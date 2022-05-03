@@ -14,7 +14,6 @@ class ResultTests extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults();
-        
     }
 
     public static $logAttributes = [

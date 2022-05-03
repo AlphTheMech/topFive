@@ -25,6 +25,5 @@ class TestsPermissions extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults();
-        
     }
 }

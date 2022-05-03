@@ -4,6 +4,8 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Carbon\Carbon;
+use Spatie\Activitylog\Models\Activity;
 
 class Kernel extends ConsoleKernel
 {
@@ -16,7 +18,7 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         //
     ];
-    
+
     /**
      * Define the application's command schedule.
      *
@@ -25,6 +27,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        $schedule->call(function () {
+            Activity::query()->where('created_at', '<', Carbon::now()->addDays(-1))->delete();
+        })->daily();
         // $schedule->command('inspire')->hourly();
     }
 

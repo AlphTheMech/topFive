@@ -17,7 +17,6 @@ class ExpertUser extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults();
-        
     }
 
     public static $logName = 'Данные пользователей экспертов';

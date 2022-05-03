@@ -14,7 +14,6 @@ class Session extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults();
-        
     }
 
     public static $logAttributes = [
