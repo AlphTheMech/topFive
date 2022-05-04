@@ -16,10 +16,10 @@ class GetSubjectResource extends JsonResource
     {
         $subject = $this->subjectTests->first();
         return [
-            'subject_name' =>  $subject->name,
-            'name_test' => $this->name_test,
-            'subject_id' =>  $subject->id,
-            'test_id' => $this->id
+            'subject_name' =>  $subject->name ?? null,
+            'name_test' => $this->name_test ?? null,
+            'subject_id' =>  $subject->id ?? null,
+            'test_id' => $this->id ?? null
 
         ];
     }
