@@ -9,12 +9,12 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class Session extends Model
 {
-    use LogsActivity;
+    // use LogsActivity;
     
-    public function getActivitylogOptions(): LogOptions
-    {
-        return LogOptions::defaults();
-    }
+    // public function getActivitylogOptions(): LogOptions
+    // {
+    //     return LogOptions::defaults();
+    // }
 
     public static $logAttributes = [
         'user2_id', 'user1_id', 'is_block', 'blocked_by'
