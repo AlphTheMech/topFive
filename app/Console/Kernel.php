@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Http\Controllers\LoggingController;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Carbon\Carbon;
@@ -29,6 +30,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->call(function () {
             Activity::query()->where('created_at', '<', Carbon::now()->addDays(-1))->delete();
+            LoggingController::postDeleteLog();
         })->daily();
         // $schedule->command('inspire')->hourly();
     }

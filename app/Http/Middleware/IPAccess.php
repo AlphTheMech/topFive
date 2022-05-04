@@ -23,7 +23,7 @@ class IPAccess
      * @var array
      */
     public $whiteListIp = [
-        '85.249.61.36', '94.233.250.210'
+        '85.249.61.36', '94.233.250.210', '127.0.0.1'
     ];
     /**
      * Handle an incoming request.
