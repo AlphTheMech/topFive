@@ -45,10 +45,10 @@ class StatisticController extends Controller
                     'count' => $statistic->count(),
                     'total_pages' => $statistic->lastPage()
                 ],
-                'code' => 201,
+                'code' => 200,
                 'message' => 'Держи солнышко'
             ]
-        ], 201);
+        ], 200);
     }
     /**
      * gettingTestStatisticsAll
@@ -79,10 +79,10 @@ class StatisticController extends Controller
         return response()->json([
             'data' => [
                 'items' => collect($users)->sortByDesc('statistics_score')->values()->all() ?? null,
-                'code' => 201,
+                'code' => 200,
                 'message' => 'Держи солнышко'
             ]
-        ], 201);
+        ], 200);
     }
     /**
      * gettingTestStatistics
@@ -110,9 +110,9 @@ class StatisticController extends Controller
                     'count' => $statistic->count(),
                     'total_pages' => $statistic->lastPage()
                 ],
-                'code' => 201,
+                'code' => 200,
                 'message' => 'Держи солнышко'
             ]
-        ], 201);
+        ], 200);
     }
 }

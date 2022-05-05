@@ -21,13 +21,10 @@ Route::group(['prefix' => 'expert', 'middleware' => ['auth:sanctum', 'role:exper
     Route::post('/unblock/{session}', [MessengerController::class, 'unblockUser']); //Разблокировать пользователя 
   });
   Route::post('/send/{session}', [MessengerController::class, 'send']); //Добавление сообщения
-  //Route::get('/get_message', [UserController::class, 'getMessage']);// Получение сообщений
-  //Route::get('/get_dialog', [UserController::class, 'getDialog']);//Получение диалогов
   Route::get('/get_result', [ResultTestController::class, 'getResults']); //Получение результата теста
   Route::get('/info', [UserController::class, 'getInfoUser']); //Получение информации о пользователе
   Route::post('/image', [ImageController::class, 'create']); //Загрузка фото
   Route::get('/find_tests', [ExpertController::class, 'searchForAnExpert']); //Получение тестов с открытым доступом
-  // Route::post('/accept_result', [UserController::class, 'postResultTest']); //Добавление результатов прохождения теста
   Route::post('/give_acces_expert', [TestController::class, 'addingAccessToTest']); //Открытие доступа к тесту
   Route::get('/get_all_subject', [SubjectController::class, 'getSubject']);
   Route::get('/find_for_admin', [UserController::class, 'findForAdmin']);

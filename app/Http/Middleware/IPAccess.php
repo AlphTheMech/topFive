@@ -39,7 +39,7 @@ class IPAccess
             return $next($request);
         }
         if (!in_array($request->ip(), $list->where('user_id', auth()->user()->id)->firstOrFail()->toArray())) {
-            throw new ApiException(403, 'Доступ запрещен');
+            abort(403, 'Отказано в доступе');
         }
         return $next($request);
     }

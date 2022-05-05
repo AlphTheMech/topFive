@@ -9,7 +9,7 @@ use App\Http\Controllers\ResultTestController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TestController;
 
-Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum', 'role:user']], function () {
+Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum', 'role:user',]], function () {
     Route::get('/get_all_subject', [SubjectController::class, 'getSubject']);
     Route::post('getFriends', [MessengerController::class, 'getFriends']); //Получение чатов
     Route::prefix('session')->group(function () {

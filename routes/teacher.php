@@ -42,5 +42,5 @@ Route::group(['prefix' => 'teacher', 'middleware' => ['auth:sanctum', 'role:teac
   Route::patch('/update_subject/{subject}', [SubjectController::class, 'updateSubject']); //Обновление предмета
   Route::delete('/delete_subject/{subject}', [SubjectController::class, 'deleteSubject']); //Удаление предмета
   Route::delete('/delete_test', [TestController::class, 'deleteTest']); //Удаление теста
-  Route::patch('/update_user_info', [UserController::class, 'updateInfoUser']);//Обновление персональных данных
+  Route::patch('/update_user_info', [UserController::class, 'updateInfoUser']); //Обновление персональных данных
 });
