@@ -120,4 +120,5 @@ class MessengerController extends Controller
     {
         return response()->json(UserResource::collection(User::where('id', '!=', auth()->id())->get()), 200);
     }
+    
 }

@@ -22,7 +22,7 @@ class RoleMiddleware
             return response()->json([
                 'error' => [
                     'code' => 403,
-                    'message' => "Access is denied"
+                    'message' => "Отказано в доступе"
                 ]
             ], 403);
         }
@@ -30,7 +30,7 @@ class RoleMiddleware
             return response()->json([
                 'error' => [
                     'code' => 403,
-                    'message' => "Access is denied21"
+                    'message' => "Отказано в доступе"
                 ]
             ], 403);
         }

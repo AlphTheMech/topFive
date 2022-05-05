@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Auth\LoginRequest;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
@@ -114,22 +115,8 @@ class UserController extends Controller
      * @param  mixed $request
      * @return JsonResponse
      */
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'email' => ['required', 'email', 'max:255'],
-            'password' => 'required',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'error' => [
-                    'code' => 422,
-                    'message' => 'Validation error',
-                    'errors' => $validator->errors(),
-                ]
-            ], 422);
-        }
         if (!Auth::attempt($request->all())) {
             return response()->json([
                 'error' => [
