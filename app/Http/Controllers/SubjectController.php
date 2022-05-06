@@ -51,7 +51,7 @@ class SubjectController extends Controller
             ]
         ], 200);
     }
-       
+
     /**
      * deleteSubject
      *

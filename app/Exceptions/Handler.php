@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use     Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -42,18 +43,11 @@ class Handler extends ExceptionHandler
         });
     }
 
-    // public function render($request, Throwable $e)
-    // {
-    //     if ($e instanceof AuthorizationException) {
-    //         $code = $e->getCode() !== 0 ? $e->getCode() : 403;
-    //         throw new ApiException($code, $e->getMessage());
-    //     }
-    //     if ($e instanceof ModelNotFoundException) {
-    //         throw new ApiException(404, 'Ресурс не найден');
-    //     }
-    //     if ($e instanceof AuthenticationException) {
-    //         throw new ApiException(403, 'Ошибка авторизации');
-    //     }
-    //     return parent::render($request, $e);
-    // }
+    public function render($request, Throwable $e)
+    {
+        if ($e instanceof ModelNotFoundException) {
+            throw new ApiException(404, 'Ресурс не найден');
+        }
+        return parent::render($request, $e);
+    }
 }
