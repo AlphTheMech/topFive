@@ -15,7 +15,7 @@ use Illuminate\Http\Request;
 
 class ExpertController extends Controller
 {
-     
+
     /**
      * getAllExpert
      *
@@ -34,7 +34,7 @@ class ExpertController extends Controller
                 'items' => $expert,
                 'paginate' => [
                     'total' => $expert->total(),
-                    'per_page' => $expert->perPage(),
+                    'per_page' => $expert->lastPage() != $expert->currentPage()  ? $expert->currentPage() + 1 : $expert->currentPage(),
                     'current_page' => $expert->currentPage(),
                     'last_page' => $expert->lastPage(),
                     'from' => $expert->firstItem(),

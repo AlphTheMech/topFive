@@ -16,7 +16,7 @@ use Illuminate\Http\Request;
 
 class StatisticController extends Controller
 {
-    
+
     /**
      * teacherExperts
      *
@@ -39,7 +39,7 @@ class StatisticController extends Controller
                     ->all() ?? null,
                 'paginate' => [
                     'total' => $statistic->total(),
-                    'per_page' => $statistic->perPage(),
+                    'per_page' => $statistic->lastPage() != $statistic->currentPage()  ? $statistic->currentPage() + 1 : $statistic->currentPage(),
                     'current_page' => $statistic->currentPage(),
                     'last_page' => $statistic->lastPage(),
                     'from' => $statistic->firstItem(),
@@ -52,7 +52,7 @@ class StatisticController extends Controller
             ]
         ], 200);
     }
-    
+
     /**
      * gettingTestStatisticsAll
      *
@@ -106,7 +106,7 @@ class StatisticController extends Controller
                     ->sortByDesc('statistics_score')->values()->all() ?? null,
                 'paginate' => [
                     'total' => $statistic->total(),
-                    'per_page' => $statistic->perPage(),
+                    'per_page' => $statistic->lastPage() != $statistic->currentPage()  ? $statistic->currentPage() + 1 : $statistic->currentPage(),
                     'current_page' => $statistic->currentPage(),
                     'last_page' => $statistic->lastPage(),
                     'from' => $statistic->firstItem(),

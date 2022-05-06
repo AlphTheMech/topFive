@@ -8,21 +8,21 @@ use Spatie\Activitylog\Models\Activity;
 use Illuminate\Http\Request;
 
 class LoggingController extends Controller
-{    
+{
     /**
      * getLogging
      *
      * @return void
      */
     public function getLogging()
-    {   
+    {
         $log = LogResource::collection(Activity::paginate(100));
         return response()->json([
             'data' => [
                 'items' => $log,
                 'paginate' => [
                     'total' => $log->total(),
-                    'per_page' => $log->perPage(),
+                    'per_page' => $log->lastPage() != $log->currentPage()  ? $log->currentPage() + 1 : $log->currentPage(),
                     'current_page' => $log->currentPage(),
                     'last_page' => $log->lastPage(),
                     'from' => $log->firstItem(),
@@ -34,7 +34,7 @@ class LoggingController extends Controller
                 'message' => "Держи солнышко"
             ]
         ], 200);
-    }    
+    }
     /**
      * deleteAllLog
      *
@@ -51,7 +51,7 @@ class LoggingController extends Controller
                 'message' => "Информация о логировании успешно удалена"
             ]
         ], 200);
-    }    
+    }
     /**
      * postDeleteLog
      *

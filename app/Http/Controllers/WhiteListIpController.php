@@ -8,7 +8,7 @@ use App\Models\WhiteListIP;
 use Illuminate\Http\Request;
 
 class WhiteListIpController extends Controller
-{    
+{
     /**
      * postIp
      *
@@ -20,7 +20,7 @@ class WhiteListIpController extends Controller
         WhiteListIP::create([
             'ip_address' => $request->ip_address,
             'user_id' => $request->id,
-            'admin_id'=>auth('sanctum')->user()->id
+            'admin_id' => auth('sanctum')->user()->id
         ]);
 
         return response()->json([
@@ -29,7 +29,7 @@ class WhiteListIpController extends Controller
                 'message' => 'Данные о ip-адресе успешно добавлено'
             ]
         ], 201);
-    }    
+    }
     /**
      * updateIp
      *
@@ -48,7 +48,7 @@ class WhiteListIpController extends Controller
                 'message' => 'Данные о ip-адресе успешно обновлено'
             ]
         ], 200);
-    }    
+    }
     /**
      * getIp
      *
@@ -63,7 +63,7 @@ class WhiteListIpController extends Controller
                 'items' =>  $ip,
                 'paginate' => [
                     'total' => $ip->total(),
-                    'per_page' => $ip->perPage(),
+                    'per_page' => $ip->lastPage() != $ip->currentPage()  ? $ip->currentPage() + 1 : $ip->currentPage(),
                     'current_page' => $ip->currentPage(),
                     'last_page' => $ip->lastPage(),
                     'from' => $ip->firstItem(),
@@ -75,7 +75,7 @@ class WhiteListIpController extends Controller
                 'message' => "Держи солнышко"
             ]
         ], 200);
-    }    
+    }
     /**
      * deleteIp
      *

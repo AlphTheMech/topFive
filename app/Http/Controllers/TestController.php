@@ -47,7 +47,7 @@ class TestController extends Controller
                 'message' => "Информация о тесте успешно добавлена"
             ]
         ], 201);
-    }    
+    }
     /**
      * updateTests
      *
@@ -70,7 +70,7 @@ class TestController extends Controller
                 'message' => "Информация о тесте успешно обновлена"
             ]
         ], 200);
-    }    
+    }
     /**
      * deleteTest
      *
@@ -103,8 +103,8 @@ class TestController extends Controller
             'data' => [
                 'items' =>  $tests,
                 'paginate' => [
-                    'total' => $tests->total(), // Общее число страниц
-                    'per_page' => $tests->perPage(), // Следующая страница
+                    'total' => $tests->total(), // Общее число элементов
+                    'per_page' => $tests->lastPage() != $tests->currentPage()  ? $tests->currentPage() + 1 : $tests->currentPage(), // Следующая страница
                     'current_page' => $tests->currentPage(), // Текущая страница
                     'last_page' => $tests->lastPage(), // Последняя  страница
                     'from' => $tests->firstItem(), // С какого элемента
@@ -164,7 +164,7 @@ class TestController extends Controller
                 'message' => "Информация о доступе к тесту успешна обновлена"
             ]
         ], 201);
-    }    
+    }
     /**
      * removeAccessToTest
      *

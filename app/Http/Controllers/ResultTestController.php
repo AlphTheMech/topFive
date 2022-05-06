@@ -29,7 +29,7 @@ class ResultTestController extends Controller
             'items' => collect($result)->sortByDesc('mark')->values()->all() ?? null,
             'paginate' => [
                 'total' => $result->total(),
-                'per_page' => $result->perPage(),
+                'per_page' => $result->lastPage() != $result->currentPage()  ? $result->currentPage() + 1 : $result->currentPage(),
                 'current_page' => $result->currentPage(),
                 'last_page' => $result->lastPage(),
                 'from' => $result->firstItem(),
