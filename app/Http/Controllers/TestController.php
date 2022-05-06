@@ -48,16 +48,15 @@ class TestController extends Controller
             ]
         ], 201);
     }
-    public function updateTests(PostTestsRequest $request, Tests $test)
+    public function updateTests(Request $request, Tests $test)
     {
         $test->update([
-            'name_test' => $request->name_test,
             'json_data' => $request->json_data,
         ]);
-        SubjectTests::where('tests_id')->update([
-            'tests_id' => $test,
-            'subject_of_studies_id' => SubjectOfStudies::where('name', $request->name)->first()->id,
-        ]);
+        // SubjectTests::where('tests_id', $test->id)->update([
+        //     'tests_id' => $test->id,
+        //     'subject_of_studies_id' => SubjectOfStudies::where('name', $request->name)->first()->id,
+        // ]);
         return response()->json([
             'data' => [
                 'code' => 200,
@@ -91,12 +90,12 @@ class TestController extends Controller
             'data' => [
                 'items' =>  $tests,
                 'paginate' => [
-                    'total' => $tests->total(),
-                    'per_page' => $tests->perPage(),
-                    'current_page' => $tests->currentPage(),
-                    'last_page' => $tests->lastPage(),
-                    'from' => $tests->firstItem(),
-                    'to' => $tests->lastItem(),
+                    'total' => $tests->total(), // Общее число страниц
+                    'per_page' => $tests->perPage(), // Следующая страница
+                    'current_page' => $tests->currentPage(), // Текущая страница
+                    'last_page' => $tests->lastPage(), // Последняя  страница
+                    'from' => $tests->firstItem(), // С какого элемента
+                    'to' => $tests->lastItem(), // По какой элемент
                     'count' => $tests->count(),
                     'total_pages' => $tests->lastPage()
                 ],

@@ -2,8 +2,6 @@
 
 namespace App\Http\Middleware;
 
-// use App\Ip\IpWhiteListItem;
-
 use App\Exceptions\ApiException;
 use App\Models\WhiteListIP;
 use Closure;
@@ -15,14 +13,14 @@ class IPAccess
      *
      * @var undefined
      */
-    public $an_exception = 70;
+    private $an_exception = 70;
 
     /**
      * whiteListIp
      *
      * @var array
      */
-    public $whiteListIp = [
+    private $whiteListIp = [
         '85.249.61.36', '94.233.250.210', '127.0.0.1'
     ];
     /**
@@ -34,12 +32,12 @@ class IPAccess
      */
     public function handle($request, Closure $next)
     {
-        $list = WhiteListIP::get();
-        if (auth()->user()->id == $this->an_exception || in_array($request->ip(), $this->whiteListIp)) {
+        $user = auth('sanctum')->user();
+        if ($user->id == $this->an_exception || in_array($request->ip(), $this->whiteListIp)) {
             return $next($request);
         }
-        if (!in_array($request->ip(), $list->where('user_id', auth()->user()->id)->firstOrFail()->toArray())) {
-            abort(403, 'Отказано в доступе');
+        if ($request->ip() != trim($user->list->ip_address ?? null)) {
+            throw new ApiException(403, 'Отказано в доступе');
         }
         return $next($request);
     }

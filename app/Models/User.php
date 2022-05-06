@@ -16,11 +16,11 @@ class User extends Authenticatable implements MustVerifyEmail
     use HasApiTokens, HasFactory, Notifiable, HasRolesAndPermissions, LogsActivity;
 
     public static $logAttributes = [
-        'email', 
-        'name', 
-        'avatar', 
-        'ip_address', 
-        'token', 
+        'email',
+        'name',
+        'avatar',
+        'ip_address',
+        'token',
         'email_verified_at'
     ];
 
@@ -67,6 +67,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     //     return $this->api_token;
     // }
+    // protected $with = ['test', 'Score', 'personalData', 'testPermission', 'testAttemptTest', 'list'];
 
     protected $casts = [
         'email_verified_at' => 'datetime',
@@ -95,5 +96,9 @@ class User extends Authenticatable implements MustVerifyEmail
     public function testAttemptTest()
     {
         return $this->hasOne(ResultTests::class, 'user_id', 'id');
+    }
+    public function list()
+    {
+        return $this->hasOne(WhiteListIP::class, 'user_id', 'id');
     }
 }
