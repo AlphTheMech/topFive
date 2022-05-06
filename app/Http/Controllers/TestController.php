@@ -184,13 +184,6 @@ class TestController extends Controller
             ], 200);
         }
         throw new ApiException(422, 'Ты че долбаеб?', 'Removing your own access');
-        // return response()->json([
-        //     'data' => [
-        //         'code' => 422,
-        //         'message' => 'Ты че долбаеб?',
-        //         'error' => 'Removing your own access'
-        //     ]
-        // ], 422);
     }
     /**
      * postResultTest

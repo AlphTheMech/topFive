@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Tests;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
@@ -16,7 +17,7 @@ class SubjectOfStudies extends Model
     public static $logAttributes = [
         'name'
     ];
-    
+
     /**
      * getActivitylogOptions
      *
@@ -28,7 +29,7 @@ class SubjectOfStudies extends Model
     }
 
     public static $logName = 'Данные предметов';
-    
+
     /**
      * fillable
      *
@@ -37,17 +38,25 @@ class SubjectOfStudies extends Model
     protected $fillable = [
         'name',
     ];
-     
+
     /**
      * subjectStudy
      *
      * @return BelongsToMany
      */
-    public function subjectStudy():BelongsToMany
+    public function subjectStudy(): BelongsToMany
     {
         return $this->belongsToMany(Tests::class, 'subject_tests');
+    }    
+    /**
+     * subjectResult
+     *
+     * @return HasOne
+     */
+    public function subjectResult(): HasOne
+    {
+        return $this->hasOne(ResultTests::class, 'subject_id', 'id');
     }
-        
     /**
      * subjectId
      *

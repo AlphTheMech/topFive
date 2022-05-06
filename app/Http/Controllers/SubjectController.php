@@ -6,6 +6,7 @@ use App\Http\Requests\CreateSubjectRequest;
 use App\Http\Requests\UpdateSubjectRequest;
 use App\Http\Resources\AllSubjectResource;
 use App\Http\Resources\GetSubjectResource;
+use App\Models\ResultTests;
 use App\Models\SubjectOfStudies;
 use App\Models\SubjectTests;
 use App\Models\Tests;
@@ -30,7 +31,7 @@ class SubjectController extends Controller
                 'message' => "Информация о предмете успешно добавлена"
             ]
         ], 201);
-    }    
+    }
     /**
      * updateSubject
      *
@@ -49,7 +50,8 @@ class SubjectController extends Controller
                 'message' => "Информация о предмете обновлена"
             ]
         ], 200);
-    }    
+    }
+       
     /**
      * deleteSubject
      *
@@ -58,7 +60,9 @@ class SubjectController extends Controller
      */
     public function deleteSubject(SubjectOfStudies $subject)
     {
-        $subject->delete();
+        $subject->subjectStudy ? SubjectTests::where('subject_of_studies_id', $subject->id)->delete() ?? null : null;
+        $subject->subjectResult ? ResultTests::where('subject_id', $subject->id)->delete() ?? null : null;
+        SubjectOfStudies::where('id', $subject->id)->delete();
         return response()->json([
             'data' => [
                 'code' => 200,
