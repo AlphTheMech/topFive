@@ -42,7 +42,14 @@ class Handler extends ExceptionHandler
             //
         });
     }
-
+    
+    /**
+     * render
+     *
+     * @param  mixed $request
+     * @param  mixed $e
+     * @return void
+     */
     public function render($request, Throwable $e)
     {
         if ($e instanceof ModelNotFoundException) {
