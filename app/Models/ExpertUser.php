@@ -13,9 +13,19 @@ class ExpertUser extends Model
     public static $logAttributes = [
         'test_id', 'user_id', 'expert_id',
     ];
-    
+        
+    /**
+     * primaryKey
+     *
+     * @var string
+     */
     protected $primaryKey = 'user_id';
-
+    
+    /**
+     * getActivitylogOptions
+     *
+     * @return LogOptions
+     */
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults();

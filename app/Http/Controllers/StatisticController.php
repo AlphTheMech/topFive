@@ -16,19 +16,21 @@ use Illuminate\Http\Request;
 
 class StatisticController extends Controller
 {
+    
     /**
      * teacherExperts
      *
-     * @return JsonResponse
+     * @return void
      */
     public function teacherExperts()
     {
-        $statistic = TeacherExpertsResource::collection(TeacherExpert::with('expert')
-            ->with('personalDataExpert')
-            ->with('emailExpert')
-            ->where('teacher_id', auth('sanctum')->user()->id)
-            ->paginate(10)
-           );
+        $statistic = TeacherExpertsResource::collection(
+            TeacherExpert::with('expert')
+                ->with('personalDataExpert')
+                ->with('emailExpert')
+                ->where('teacher_id', auth('sanctum')->user()->id)
+                ->paginate(10)
+        );
         return response()->json([
             'data' => [
                 'items' => collect($statistic)
@@ -50,11 +52,12 @@ class StatisticController extends Controller
             ]
         ], 200);
     }
+    
     /**
      * gettingTestStatisticsAll
      *
      * @param  mixed $request
-     * @return JsonResponse
+     * @return void
      */
     public function gettingTestStatisticsAll(Request $request)
     {
@@ -84,11 +87,12 @@ class StatisticController extends Controller
             ]
         ], 200);
     }
+
     /**
      * gettingTestStatistics
      *
      * @param  mixed $request
-     * @return JsonResponse
+     * @return void
      */
     public function gettingTestStatistics(GettingTestStatisticsRequest $request)
     {

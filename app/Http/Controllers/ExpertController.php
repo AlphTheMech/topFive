@@ -15,11 +15,11 @@ use Illuminate\Http\Request;
 
 class ExpertController extends Controller
 {
+     
     /**
      * getAllExpert
      *
-     * @param  mixed $request
-     * @return JsonResponse
+     * @return void
      */
     public function getAllExpert()
     {

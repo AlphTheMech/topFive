@@ -40,7 +40,13 @@ class ResultTestController extends Controller
             'code' => 200,
             'message' => 'Данные об оценке успешно получены'
         ], 200);
-    }
+    }    
+    /**
+     * updateAttemptToTest
+     *
+     * @param  mixed $result
+     * @return void
+     */
     public function updateAttemptToTest(ResultTests $result)
     {
         if ($result->number_of_attempts == 2) {

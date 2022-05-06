@@ -30,7 +30,13 @@ class FindResource extends JsonResource
             'role_slug' => $user->roles->first()->slug,
             'permission_slug' => $user->permissions->first()->slug,
         ];
-    }
+    }    
+    /**
+     * FIO
+     *
+     * @param  mixed $id
+     * @return void
+     */
     protected function FIO($id)
     {
         return PersonalData::where('user_id', $id)->first();

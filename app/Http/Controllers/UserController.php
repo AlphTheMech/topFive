@@ -38,7 +38,13 @@ class UserController extends Controller
             'code' => 200,
             'message' => 'Полученные данные'
         ], 200);
-    }
+    }    
+    /**
+     * updateInfoUser
+     *
+     * @param  mixed $request
+     * @return void
+     */
     public function updateInfoUser(UpdateUserInfoRequest $request)
     {
         $user = auth('sanctum')->user()->id;

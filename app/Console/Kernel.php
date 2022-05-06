@@ -29,7 +29,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->call(function () {
-            Activity::query()->where('created_at', '<', Carbon::now()->addDays(-1))->delete();
+            Activity::query()->where('created_at', '<', Carbon::now()->addDays(-21))->delete();
             LoggingController::postDeleteLog();
         })->daily();
         // $schedule->command('inspire')->hourly();

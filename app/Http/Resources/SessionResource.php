@@ -6,7 +6,13 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class SessionResource extends JsonResource
 {
-
+    
+    /**
+     * toArray
+     *
+     * @param  mixed $request
+     * @return void
+     */
     public function toArray($request)
     {
         return [

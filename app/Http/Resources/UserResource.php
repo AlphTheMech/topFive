@@ -23,7 +23,13 @@ class UserResource extends JsonResource
             'session' => $this->session_details($this->id),
             // 'image' => $this->image,
         ];
-    }
+    }    
+    /**
+     * session_details
+     *
+     * @param  mixed $id
+     * @return void
+     */
     private function session_details($id)
     {
         $session = Session::whereIn('user1_id', [auth()->id(), $id])->whereIn('user2_id', [auth()->id(), $id])->first();

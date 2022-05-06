@@ -9,9 +9,14 @@ use Illuminate\Foundation\Http\FormRequest;
 class ApiRequest extends FormRequest
 {
 
+    /**
+     * failedValidation
+     *
+     * @param  mixed $validator
+     * @return void
+     */
     protected function failedValidation(Validator $validator)
     {
         throw new ApiException(422, 'Ошибка валидации', $validator->errors());
     }
-
 }

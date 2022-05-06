@@ -25,11 +25,23 @@ class GetResultResource extends JsonResource
             'mark' => $this->mark,
             'id'=>$this->id,
         ];
-    }
+    }    
+    /**
+     * FIO
+     *
+     * @param  mixed $id
+     * @return void
+     */
     protected function FIO($id)
     {
         return PersonalData::where('user_id', $id)->first();
-    }
+    }    
+    /**
+     * userEmail
+     *
+     * @param  mixed $id
+     * @return void
+     */
     protected function userEmail($id)
     {
         return User::where('id', $id)->first();

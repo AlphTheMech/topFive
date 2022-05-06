@@ -30,7 +30,13 @@ class GetAllExpertResource extends JsonResource
             ],
             'tests' => $this->testArray($this->testPermission),
         ];
-    }
+    }    
+    /**
+     * testArray
+     *
+     * @param  mixed $data
+     * @return void
+     */
     protected function testArray($data)
     {
         return TestExpertResource::collection($data);

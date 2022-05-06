@@ -10,7 +10,12 @@ use Spatie\Activitylog\LogOptions;
 class Permission extends Model
 {
     use HasFactory, LogsActivity;
-
+    
+    /**
+     * timestamps
+     *
+     * @var bool
+     */
     public $timestamps = true;
 
     public static $logAttributes = [
@@ -18,16 +23,22 @@ class Permission extends Model
     ];
 
     public static $logName = 'Данные прав';
-
+    
+    /**
+     * getActivitylogOptions
+     *
+     * @return LogOptions
+     */
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults();
     }
-
+    
     /**
+     * roles
+     *
      * @return BelongsToMany
      */
-
     public function roles(): BelongsToMany
     {
         return $this->belongsToMany(Role::class, 'roles_permissions');

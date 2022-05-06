@@ -8,7 +8,13 @@ use App\Models\WhiteListIP;
 use Illuminate\Http\Request;
 
 class WhiteListIpController extends Controller
-{
+{    
+    /**
+     * postIp
+     *
+     * @param  mixed $request
+     * @return void
+     */
     public function postIp(PostIpRequest $request)
     {
         WhiteListIP::create([
@@ -23,7 +29,14 @@ class WhiteListIpController extends Controller
                 'message' => 'Данные о ip-адресе успешно добавлено'
             ]
         ], 201);
-    }
+    }    
+    /**
+     * updateIp
+     *
+     * @param  mixed $id
+     * @param  mixed $request
+     * @return void
+     */
     public function updateIp(WhiteListIP $id, Request $request)
     {
         $id->update([
@@ -35,7 +48,12 @@ class WhiteListIpController extends Controller
                 'message' => 'Данные о ip-адресе успешно обновлено'
             ]
         ], 200);
-    }
+    }    
+    /**
+     * getIp
+     *
+     * @return void
+     */
     public function getIp()
     {
         // return WhiteListIP::with('responsible')->with('personalData')->paginate(25);
@@ -57,7 +75,13 @@ class WhiteListIpController extends Controller
                 'message' => "Держи солнышко"
             ]
         ], 200);
-    }
+    }    
+    /**
+     * deleteIp
+     *
+     * @param  mixed $id
+     * @return void
+     */
     public function deleteIp(WhiteListIP $id)
     {
         $id->delete();

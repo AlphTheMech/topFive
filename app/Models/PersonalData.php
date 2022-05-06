@@ -10,7 +10,12 @@ use Spatie\Activitylog\Traits\LogsActivity;
 class PersonalData extends Model
 {
     use HasFactory, LogsActivity;
-
+    
+    /**
+     * getActivitylogOptions
+     *
+     * @return LogOptions
+     */
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults();
@@ -21,7 +26,12 @@ class PersonalData extends Model
     ];
     
     public static $logName = 'Данные персональных данных пользователей';
-
+    
+    /**
+     * fillable
+     *
+     * @var array
+     */
     protected $fillable = [
         'first_name',
         'middle_name',

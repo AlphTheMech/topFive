@@ -5,8 +5,10 @@ namespace App\Models;
 // use App\Models\Storage\User\Employee;
 // use App\Models\Storage\User\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
+
 class WhiteListIP extends Model
 {
     use LogsActivity;
@@ -21,6 +23,11 @@ class WhiteListIP extends Model
     public static $logAttributes = [
         'user_id', 'ip_address'
     ];
+    /**
+     * getActivitylogOptions
+     *
+     * @return LogOptions
+     */
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults();
@@ -29,14 +36,39 @@ class WhiteListIP extends Model
 
     public static $logName = 'IP адреса админов';
 
+    /**
+     * table
+     *
+     * @var string
+     */
     protected $table = 'white_list_ip';
 
+    /**
+     * timestamps
+     *
+     * @var bool
+     */
     public $timestamps = true;
 
+    /**
+     * guarded
+     *
+     * @var array
+     */
     protected $guarded = ['id'];
 
+    /**
+     * dates
+     *
+     * @var array
+     */
     protected $dates = ['created_by', 'updated_by'];
 
+    /**
+     * fillable
+     *
+     * @var array
+     */
     protected $fillable = [
         'ip_address',
         'user_id'
@@ -49,12 +81,24 @@ class WhiteListIP extends Model
     // public function employee()
     // {
     //     return $this->hasOne(Employee::class, 'id' , 'employee_id');
-    // }
-    public function responsible()
+    // }    
+
+    /**
+     * responsible
+     *
+     * @return HasOne
+     */
+    public function responsible(): HasOne
     {
         return $this->hasOne(User::class, 'id', 'user_id');
     }
-    public function personalData()
+
+    /**
+     * personalData
+     *
+     * @return HasOne
+     */
+    public function personalData(): HasOne
     {
         return $this->hasOne(PersonalData::class, 'user_id', 'user_id');
     }

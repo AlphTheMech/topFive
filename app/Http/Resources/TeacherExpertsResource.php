@@ -26,7 +26,13 @@ class TeacherExpertsResource extends JsonResource
             'test_name'=>$test->name_test,
             'subject'=>$test->subjectTests->first()->name,
         ];
-    }
+    }    
+    /**
+     * testDataStatistic
+     *
+     * @param  mixed $id
+     * @return void
+     */
     protected function testDataStatistic($id)
     {
         return Tests::with('subjectTests')->get()->where('id', $id);

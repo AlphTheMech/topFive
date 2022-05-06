@@ -30,7 +30,14 @@ class SubjectController extends Controller
                 'message' => "Информация о предмете успешно добавлена"
             ]
         ], 201);
-    }
+    }    
+    /**
+     * updateSubject
+     *
+     * @param  mixed $subject
+     * @param  mixed $request
+     * @return void
+     */
     public function updateSubject(SubjectOfStudies $subject, UpdateSubjectRequest $request)
     {
         $subject->update([
@@ -42,7 +49,13 @@ class SubjectController extends Controller
                 'message' => "Информация о предмете обновлена"
             ]
         ], 200);
-    }
+    }    
+    /**
+     * deleteSubject
+     *
+     * @param  mixed $subject
+     * @return void
+     */
     public function deleteSubject(SubjectOfStudies $subject)
     {
         $subject->delete();

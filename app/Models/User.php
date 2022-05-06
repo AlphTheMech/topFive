@@ -8,6 +8,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Traits\HasRolesAndPermissions;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 
@@ -72,32 +74,62 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-
-    public function  test()
+    
+    /**
+     * test
+     *
+     * @return BelongsToMany
+     */
+    public function  test(): BelongsToMany
     {
         return $this->belongsToMany(Tests::class, 'tests_permissions');
     }
-
-    public function Score()
+    
+    /**
+     * Score
+     *
+     * @return HasOne
+     */
+    public function Score(): HasOne
     {
         return $this->hasOne(ExpertStatistics::class, 'id', 'expert_id');
     }
-
-    public function personalData()
+    
+    /**
+     * personalData
+     *
+     * @return HasOne
+     */
+    public function personalData(): HasOne
     {
         return $this->hasOne(PersonalData::class, 'user_id', 'id');
     }
-
-    public function testPermission()
+    
+    /**
+     * testPermission
+     *
+     * @return BelongsToMany
+     */
+    public function testPermission(): BelongsToMany
     {
         return $this->belongsToMany(Tests::class, 'tests_permissions');
     }
-
-    public function testAttemptTest()
+    
+    /**
+     * testAttemptTest
+     *
+     * @return HasOne
+     */
+    public function testAttemptTest(): HasOne
     {
         return $this->hasOne(ResultTests::class, 'user_id', 'id');
-    }
-    public function list()
+    }    
+    /**
+     * list
+     *
+     * @return HasOne
+     */
+    public function list(): HasOne
     {
         return $this->hasOne(WhiteListIP::class, 'user_id', 'id');
     }

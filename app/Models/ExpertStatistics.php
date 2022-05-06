@@ -14,9 +14,19 @@ class ExpertStatistics extends Model
     public static $logAttributes = [
         'test_id', 'expert_id', 'statistics_score',
     ];
-
+    
+    /**
+     * primaryKey
+     *
+     * @var string
+     */
     protected $primaryKey = 'test_id';
-
+    
+    /**
+     * getActivitylogOptions
+     *
+     * @return LogOptions
+     */
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults();

@@ -11,9 +11,19 @@ use Spatie\Activitylog\LogOptions;
 class Role extends Model
 {
     use HasFactory, LogsActivity;
-
+    
+    /**
+     * timestamps
+     *
+     * @var bool
+     */
     public $timestamps = true;
-
+    
+    /**
+     * fillable
+     *
+     * @var array
+     */
     protected $fillable = [
         'name',
         'slug',
@@ -24,13 +34,21 @@ class Role extends Model
     ];
 
     public static $logName = 'Данные ролей';
-
+    
+    /**
+     * getActivitylogOptions
+     *
+     * @return LogOptions
+     */
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults();
     }
 
+    
     /**
+     * permissions
+     *
      * @return BelongsToMany
      */
     public function permissions(): BelongsToMany

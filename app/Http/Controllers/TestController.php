@@ -47,7 +47,14 @@ class TestController extends Controller
                 'message' => "Информация о тесте успешно добавлена"
             ]
         ], 201);
-    }
+    }    
+    /**
+     * updateTests
+     *
+     * @param  mixed $request
+     * @param  mixed $test
+     * @return void
+     */
     public function updateTests(Request $request, Tests $test)
     {
         $test->update([
@@ -63,7 +70,13 @@ class TestController extends Controller
                 'message' => "Информация о тесте успешно обновлена"
             ]
         ], 200);
-    }
+    }    
+    /**
+     * deleteTest
+     *
+     * @param  mixed $request
+     * @return void
+     */
     public function deleteTest(DeleteTestRequest $request)
     {
         SubjectTests::where('tests_id', $request->test_id)->delete();
@@ -151,7 +164,13 @@ class TestController extends Controller
                 'message' => "Информация о доступе к тесту успешна обновлена"
             ]
         ], 201);
-    }
+    }    
+    /**
+     * removeAccessToTest
+     *
+     * @param  mixed $request
+     * @return void
+     */
     public function removeAccessToTest(RemoveAccessToTestRequest $request)
     {
         if ($request->id != auth('sanctum')->user()->id) {

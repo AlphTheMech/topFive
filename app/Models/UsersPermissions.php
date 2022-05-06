@@ -10,9 +10,19 @@ use Spatie\Activitylog\LogOptions;
 class UsersPermissions extends Model
 {
     use HasFactory;
-
+    
+    /**
+     * primaryKey
+     *
+     * @var string
+     */
     protected $primaryKey = 'user_id';
-
+    
+    /**
+     * fillable
+     *
+     * @var array
+     */
     protected $fillable = [
         'user_id',
         'permission_id'
@@ -23,7 +33,12 @@ class UsersPermissions extends Model
     ];
 
     public static $logName = 'Данные прав пользователей';
-
+    
+    /**
+     * getActivitylogOptions
+     *
+     * @return LogOptions
+     */
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults();

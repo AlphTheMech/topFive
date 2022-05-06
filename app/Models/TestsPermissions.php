@@ -16,12 +16,22 @@ class TestsPermissions extends Model
     ];
 
     public static $logName = 'Данные доступа к тесту';
-
+    
+    /**
+     * fillable
+     *
+     * @var array
+     */
     protected $fillable = [
         'user_id',
         'tests_id'
     ];
-
+    
+    /**
+     * getActivitylogOptions
+     *
+     * @return LogOptions
+     */
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults();

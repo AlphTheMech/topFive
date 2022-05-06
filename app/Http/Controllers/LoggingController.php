@@ -8,7 +8,12 @@ use Spatie\Activitylog\Models\Activity;
 use Illuminate\Http\Request;
 
 class LoggingController extends Controller
-{
+{    
+    /**
+     * getLogging
+     *
+     * @return void
+     */
     public function getLogging()
     {   
         $log = LogResource::collection(Activity::paginate(100));
@@ -29,7 +34,12 @@ class LoggingController extends Controller
                 'message' => "Держи солнышко"
             ]
         ], 200);
-    }
+    }    
+    /**
+     * deleteAllLog
+     *
+     * @return void
+     */
     public function deleteAllLog()
     {
         $log = Activity::get();
@@ -41,7 +51,12 @@ class LoggingController extends Controller
                 'message' => "Информация о логировании успешно удалена"
             ]
         ], 200);
-    }
+    }    
+    /**
+     * postDeleteLog
+     *
+     * @return void
+     */
     public function postDeleteLog()
     {
         Activity::create([
