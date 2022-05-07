@@ -47,19 +47,32 @@ class ExpertController extends Controller
             ]
         ], 200);
     }
+    
     /**
      * searchForAnExpert
      *
-     * @param  mixed $request
      * @return void
      */
-    public function searchForAnExpert(Request $request)
+    public function searchForAnExpert()
     {
+        $tests = Tests::with('permissionTest')
+            ->whereHas('permissionTest', function ($query) {
+                $query->where('user_id', auth('sanctum')->user()->id);
+            })
+            ->paginate(10);
         return response()->json([
             'data' => [
-                "items" => SearchForAnExpertResource::collection(User::with('testPermission')
-                    ->where('id', auth('sanctum')->user()->id)
-                    ->first()->testPermission),
+                "items" => SearchForAnExpertResource::collection($tests),
+                'paginate' => [
+                    'total' => $tests->total(), // Общее число элементов
+                    'per_page' => $tests->lastPage() != $tests->currentPage()  ? $tests->currentPage() + 1 : $tests->currentPage(), // Следующая страница
+                    'current_page' => $tests->currentPage(), // Текущая страница
+                    'last_page' => $tests->lastPage(), // Последняя  страница
+                    'from' => $tests->firstItem(), // С какого элемента
+                    'to' => $tests->lastItem(), // По какой элемент
+                    'count' => $tests->count(),
+                    'total_pages' => $tests->lastPage()
+                ],
                 'code' => 200,
                 'message' => "Держи солнышко"
             ]

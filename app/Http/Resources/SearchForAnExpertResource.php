@@ -37,13 +37,13 @@ class SearchForAnExpertResource extends JsonResource
                 'json_data' => $this->json_data,
             ];
         }
-    }    
+    }
 
     protected function subjectName($id)
     {
         $tests =  ModelsTests::with('subjectTests')->get()->where('id', $id)->first();
         return new SubjectArrayResource($tests);
-    }    
+    }
 
     protected function accessAttempt($id)
     {
