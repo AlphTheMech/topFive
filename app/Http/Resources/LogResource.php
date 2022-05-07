@@ -17,7 +17,7 @@ class LogResource extends JsonResource
     public function toArray($request)
     {
         $fio = $this->FIO($this->causer_id);
-      $info = $this->userInfo($this->causer_id);
+        $info = $this->userInfo($this->causer_id);
         return [
             'properties' => $this->properties,
             'log_name' => $this->log_name,

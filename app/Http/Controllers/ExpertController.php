@@ -21,7 +21,7 @@ class ExpertController extends Controller
      *
      * @return void
      */
-    public function getAllExpert()
+    public function getAllExpert(Request $request)
     {
         $expert = GetAllExpertResource::collection(User::with('roles')
             ->with('personalData')
@@ -53,7 +53,7 @@ class ExpertController extends Controller
      *
      * @return void
      */
-    public function searchForAnExpert()
+    public function searchForAnExpert(Request $request)
     {
         $tests = Tests::with('permissionTest')
             ->whereHas('permissionTest', function ($query) {

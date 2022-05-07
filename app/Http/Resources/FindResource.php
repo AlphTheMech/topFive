@@ -9,6 +9,7 @@ use App\Models\Role;
 use App\Models\User;
 use App\Models\UsersPermissions;
 use App\Models\UsersRoles;
+use Illuminate\Support\Str;
 
 class FindResource extends JsonResource
 {
@@ -27,6 +28,10 @@ class FindResource extends JsonResource
             'first_name' => $fio->first_name ?? null,
             'middle_name' => $fio->middle_name ?? null,
             'last_name' => $fio->last_name ?? null,
+            'abbreviation' => Str::upper(mb_substr($fio->last_name ?? null, 0, 1)) .
+                mb_substr($fio->last_name ?? null, 1) . ' ' .
+                Str::upper(mb_substr($fio->first_name ?? null, 0, 1)) . '.' .
+                Str::upper(mb_substr($fio->middle_name ?? null, 0, 1)) . '.',
             'role_slug' => $this->roles->first()->slug,
             'permission_slug' => $this->permissions->first()->slug,
         ];

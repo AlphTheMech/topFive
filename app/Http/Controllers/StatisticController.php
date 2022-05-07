@@ -13,6 +13,7 @@ use App\Models\TeacherExpert;
 use App\Models\Tests;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class StatisticController extends Controller
 {
@@ -73,6 +74,10 @@ class StatisticController extends Controller
                     'first_name' => $personalData->first_name,
                     'middle_name' => $personalData->middle_name,
                     'last_name' => $personalData->last_name,
+                    'abbreviation' => Str::upper(mb_substr($personalData->last_name ?? null, 0, 1)) .
+                        mb_substr($personalData->last_name ?? null, 1) . ' ' .
+                        Str::upper(mb_substr($personalData->first_name ?? null, 0, 1)) . '.' .
+                        Str::upper(mb_substr($personalData->middle_name ?? null, 0, 1)) . '.',
                     'email' => $user->email,
                     'statistics_score' => $stat,
                 ];
