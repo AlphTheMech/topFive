@@ -8,14 +8,14 @@ use Closure;
 
 class IPAccess
 {
-    
+
     /**
      * an_exception
      *
      * @var int
      */
     private $an_exception = 70;
-    
+
     /**
      * whiteListIp
      *

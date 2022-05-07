@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Exceptions\ApiException;
 use Closure;
 use Illuminate\Http\Request;
 
@@ -19,20 +20,10 @@ class RoleMiddleware
     public function handle($request, Closure $next, $role, $permission = null)
     {
         if (!auth()->user()->hasRole($role)) {
-            return response()->json([
-                'error' => [
-                    'code' => 403,
-                    'message' => "Отказано в доступе"
-                ]
-            ], 403);
+            throw new ApiException(403, 'Отказано в доступе');
         }
         if ($permission !== null && !auth()->user()->can($permission)) {
-            return response()->json([
-                'error' => [
-                    'code' => 403,
-                    'message' => "Отказано в доступе"
-                ]
-            ], 403);
+            throw new ApiException(403, 'Отказано в доступе');
         }
         return $next($request);
     }
