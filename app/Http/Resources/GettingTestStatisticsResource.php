@@ -25,22 +25,10 @@ class GettingTestStatisticsResource extends JsonResource
             'statistics_score' => $this->statistics_score,
         ];
     }    
-    /**
-     * userEmail
-     *
-     * @param  mixed $id
-     * @return void
-     */
     protected function userEmail($id)
     {
         return User::where('id', $id)->first()->email;
     }    
-    /**
-     * FIO
-     *
-     * @param  mixed $id
-     * @return void
-     */
     protected function FIO($id)
     {
         return PersonalData::where('user_id', $id)->first();

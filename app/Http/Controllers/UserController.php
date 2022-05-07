@@ -38,7 +38,7 @@ class UserController extends Controller
             'code' => 200,
             'message' => 'Полученные данные'
         ], 200);
-    }    
+    }
     /**
      * updateInfoUser
      *
@@ -59,17 +59,20 @@ class UserController extends Controller
             ]
         ], 200);
     }
+    
     /**
      * findForAdmin
      *
      * @param  mixed $request
-     * @return JsonResponse
+     * @return void
      */
     public function findForAdmin(FindForAdminRequest $request)
     {
         return response()->json([
             'data' => [
-                'user_info' => FindResource::make(User::where('email', $request->email)->first()),
+                'user_info' => FindResource::make(User::with('roles')
+                    ->with('permissions')
+                    ->where('email', $request->email)->first()),
             ],
             'code' => 200,
             'message' => "Держи солнышко"
@@ -86,11 +89,11 @@ class UserController extends Controller
         $user = auth('sanctum')->user()->id;
         $user_request = User::where('email', $request->email)->first()->id;
         UsersRoles::where('user_id', $user_request)->update([
-            'role_id' => Role::where('slug', $request->role)->first()->id,
+            'role_id' => Role::where('slug', trim($request->role))->first()->id,
         ]);
 
         UsersPermissions::where('user_id', $user_request)->update([
-            'permission_id' => Permission::where('slug', $request->permission)->first()->id,
+            'permission_id' => Permission::where('slug', trim($request->permission))->first()->id,
         ]);
 
         $teacher = auth('sanctum')->user()->roles->first()->slug;
