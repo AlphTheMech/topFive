@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Exceptions\ApiException;
 use Closure;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class RoleMiddleware
 {
@@ -20,10 +21,10 @@ class RoleMiddleware
     public function handle($request, Closure $next, $role, $permission = null)
     {
         if (!auth()->user()->hasRole($role)) {
-            throw new ApiException(403, 'Отказано в доступе');
+            throw new ApiException(Response::HTTP_FORBIDDEN, 'Отказано в доступе');
         }
         if ($permission !== null && !auth()->user()->can($permission)) {
-            throw new ApiException(403, 'Отказано в доступе');
+            throw new ApiException(Response::HTTP_FORBIDDEN, 'Отказано в доступе');
         }
         return $next($request);
     }

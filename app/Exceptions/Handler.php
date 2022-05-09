@@ -8,6 +8,7 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Throwable;
 
@@ -44,7 +45,7 @@ class Handler extends ExceptionHandler
             //
         });
     }
-    
+
     /**
      * render
      *
@@ -55,13 +56,13 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $e)
     {
         if ($e instanceof ModelNotFoundException) {
-            throw new ApiException(404, 'Ресурс не найден');
+            throw new ApiException(Response::HTTP_NOT_FOUND, 'Ресурс не найден');
         }
-        if ($e instanceof QueryException ){
-            throw new ApiException(405, 'Запись уже существует');
+        if ($e instanceof QueryException) {
+            throw new ApiException(Response::HTTP_UNPROCESSABLE_ENTITY, 'Запись уже существует');
         }
         if ($e instanceof  RouteNotFoundException) {
-            throw new ApiException(401, 'Пользователь не авторизирован');
+            throw new ApiException(Response::HTTP_UNAUTHORIZED, 'Пользователь не авторизирован');
         }
         return parent::render($request, $e);
     }

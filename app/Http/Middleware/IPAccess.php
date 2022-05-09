@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Exceptions\ApiException;
 use App\Models\WhiteListIP;
 use Closure;
+use Symfony\Component\HttpFoundation\Response;
 
 class IPAccess
 {
@@ -38,7 +39,7 @@ class IPAccess
             return $next($request);
         }
         if ($request->ip() != trim($user->list->ip_address ?? null)) {
-            throw new ApiException(403, 'Отказано в доступе');
+            throw new ApiException(Response::HTTP_FORBIDDEN, 'Отказано в доступе');
         }
         return $next($request);
     }
