@@ -58,7 +58,7 @@ class TeacherExpert extends Model
     {
         return $this->hasOne(PersonalData::class, 'user_id', 'expert_id');
     }
-       
+
     /**
      * emailExpert
      *

@@ -130,7 +130,7 @@ class UserController extends Controller
             return response()->json([
                 'error' => [
                     'code' => 401,
-                    "message" => 'This user not register'
+                    "message" => 'Пользователь не зарегистрирован'
                 ]
             ], Response::HTTP_UNAUTHORIZED);
         }

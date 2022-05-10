@@ -2,12 +2,11 @@
 
 namespace App\Exceptions;
 
-use     Exception;
-use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Auth\AuthenticationException;
+use ErrorException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException as ExceptionFileNotFoundException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Throwable;
@@ -63,6 +62,12 @@ class Handler extends ExceptionHandler
         }
         if ($e instanceof  RouteNotFoundException) {
             throw new ApiException(Response::HTTP_UNAUTHORIZED, 'Пользователь не авторизирован');
+        }
+        if ($e instanceof ErrorException) {
+            throw new ApiException(Response::HTTP_UNPROCESSABLE_ENTITY, 'Запись не найдена');
+        }
+        if ($e instanceof ExceptionFileNotFoundException) {
+            throw new ApiException(Response::HTTP_UNPROCESSABLE_ENTITY, 'Файл не найден');
         }
         return parent::render($request, $e);
     }
