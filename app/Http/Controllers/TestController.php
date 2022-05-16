@@ -96,9 +96,17 @@ class TestController extends Controller
      */
     public function getAllTests(Request $request)
     {
-        $request->name ? $tests = GetAllResource::collection(Tests::with('subjectTests')->whereHas('subjectTests', function ($query) use ($request) {
-            $query->where('name', $request->name);
-        })->paginate(10)) : $tests = GetAllResource::collection(Tests::with('subjectTests')->paginate(10));
+        if ($request->name && $request->name_test) {
+            $tests = GetAllResource::collection(Tests::with('subjectTests')->where('name_test', $request->name_test)->whereHas('subjectTests', function ($query) use ($request) {
+                $query->where('name', $request->name);
+            })->paginate(10));
+        } else if ($request->name) {
+            $tests = GetAllResource::collection(Tests::with('subjectTests')->whereHas('subjectTests', function ($query) use ($request) {
+                $query->where('name', $request->name);
+            })->paginate(10));
+        } else {
+            $tests = GetAllResource::collection(Tests::with('subjectTests')->paginate(10));
+        }
         return response()->json([
             'data' => [
                 'items' =>  $tests,

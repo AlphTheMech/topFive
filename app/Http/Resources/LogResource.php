@@ -21,13 +21,13 @@ class LogResource extends JsonResource
         return [
             'properties' => $this->properties,
             'log_name' => $this->log_name,
-            'batch_uuid' => $this->batch_uuid,
+            // 'batch_uuid' => $this->batch_uuid,
             'created_at' => $this->created_at->format('d.m.Y  H:i:s'),
             'updated_at' => $this->updated_at->format('d.m.Y  H:i:s'),
             'first_name' => $fio->first_name ?? null,
             'middle_name' => $fio->middle_name ?? null,
             'last_name' => $fio->last_name ?? null,
-            'user' => $info->email ?? null,
+            'user_email' => $info->email ?? null,
             'ip_address' => $info->ip_address ?? null,
         ];
     }

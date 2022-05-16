@@ -64,10 +64,10 @@ class Handler extends ExceptionHandler
             throw new ApiException(Response::HTTP_UNAUTHORIZED, 'Пользователь не авторизирован');
         }
         if ($e instanceof ErrorException) {
-            throw new ApiException(Response::HTTP_UNPROCESSABLE_ENTITY, 'Запись не найдена');
+            throw new ApiException(Response::HTTP_NOT_FOUND, 'Запись не найдена');
         }
         if ($e instanceof ExceptionFileNotFoundException) {
-            throw new ApiException(Response::HTTP_UNPROCESSABLE_ENTITY, 'Файл не найден');
+            throw new ApiException(Response::HTTP_NOT_FOUND, 'Файл не найден');
         }
         return parent::render($request, $e);
     }

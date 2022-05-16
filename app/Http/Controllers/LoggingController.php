@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\LogResource;
+use App\Models\ActivityLog;
 use Carbon\Carbon;
 use Spatie\Activitylog\Models\Activity;
 use Illuminate\Http\Request;
@@ -42,23 +43,7 @@ class LoggingController extends Controller
      */
     public function deleteAllLog()
     {
-        $log = Activity::get();
-        $log->delete();
-        LoggingController::postDeleteLog();
-        return response()->json([
-            'data' => [
-                'code' => 200,
-                'message' => "Информация о логировании успешно удалена"
-            ]
-        ], 200);
-    }
-    /**
-     * postDeleteLog
-     *
-     * @return void
-     */
-    public function postDeleteLog()
-    {
+        Activity::truncate();
         Activity::create([
             'log_name' => 'Удаление лога',
             'description' => 'deleted',
@@ -70,9 +55,11 @@ class LoggingController extends Controller
             'properties' => null,
             'batch_uuid' => null,
         ]);
+        return response()->json([
+            'data' => [
+                'code' => 200,
+                'message' => "Информация о логировании успешно удалена"
+            ]
+        ], 200);
     }
-    // public function deletingRecordsOlderThan14Days()
-    // {
-    //     Activity::where('created_at', '<', Carbon::now()->subDays(21))->get()->delete();
-    // }
 }
