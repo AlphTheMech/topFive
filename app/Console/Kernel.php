@@ -29,8 +29,18 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->call(function () {
-            Activity::query()->where('created_at', '<', Carbon::now()->addDays(-21))->delete();
-            LoggingController::postDeleteLog();
+            Activity::where('created_at', '<', Carbon::now()->addDays(-21))->delete();
+            Activity::create([
+                'log_name' => 'Удаление лога',
+                'description' => 'deleted',
+                'subject_type' => 'App\Models\User',
+                'event' => null,
+                'subject_id' => 62,
+                'causer_type' => 'App\Models\User',
+                'causer_id' => auth('sanctum')->user()->id,
+                'properties' => null,
+                'batch_uuid' => null,
+            ]);
         })->daily();
         // $schedule->command('inspire')->hourly();
     }
