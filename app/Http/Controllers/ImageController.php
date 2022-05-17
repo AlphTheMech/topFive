@@ -11,7 +11,13 @@ use Illuminate\Support\Facades\Storage;
 
 class ImageController extends Controller
 {
-
+    
+    /**
+     * create
+     *
+     * @param  mixed $request
+     * @return void
+     */
     protected function create(Request $request)
     {
         $user = auth('sanctum')->user()->id;
@@ -28,11 +34,16 @@ class ImageController extends Controller
                 'message' => "Фото успешно обновлено"
             ]
         ], 201);
-    }
-
+    }    
+    /**
+     * donwload
+     *
+     * @param  mixed $request
+     * @return void
+     */
     public function donwload(Request $request)
     {
-        $pathToFile=storage_path()."/app/public/to/file/".$request->file_name;
-        return response()->download($pathToFile);        
+        $pathToFile = storage_path() . "/app/public/to/file/" . $request->file_name;
+        return response()->download($pathToFile);
     }
 }

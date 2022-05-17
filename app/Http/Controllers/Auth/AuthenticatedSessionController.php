@@ -37,6 +37,6 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return response()->noContent();
+        return response()->noContent()->withCookie(cookie('jwt', null ,0));
     }
 }

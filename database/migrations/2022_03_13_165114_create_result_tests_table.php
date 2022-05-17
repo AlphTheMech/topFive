@@ -18,7 +18,7 @@ class CreateResultTestsTable extends Migration
             $table->integer('mark');
             $table->integer('number_of_attempts');
             $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('test_id');
+            $table->unsignedBigInteger('tests_id');
             $table->unsignedBigInteger('subject_id');
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('test_id')->references('id')->on('tests');

@@ -13,11 +13,28 @@ use Illuminate\Queue\SerializesModels;
 class PrivateChatEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-
-    public $content;
+    
+    /**
+     * content
+     *
+     * @var mixed
+     */
+    public $content;    
+    /**
+     * chat
+     *
+     * @var mixed
+     */
     public $chat;
 
-
+    
+    /**
+     * __construct
+     *
+     * @param  mixed $content
+     * @param  mixed $chat
+     * @return void
+     */
     public function __construct($content, $chat)
     {
         $this->content = $content;
@@ -25,7 +42,12 @@ class PrivateChatEvent implements ShouldBroadcast
         $this->dontBroadcastToCurrentUser();
     }
 
-
+    
+    /**
+     * broadcastOn
+     *
+     * @return void
+     */
     public function broadcastOn()
     {
         return new PrivateChannel('Chat.'. $this->chat['session_id']);

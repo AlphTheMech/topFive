@@ -46,6 +46,9 @@ trait HasRolesAndPermissions
         return (bool)$this->permissions->where('slug', $permission)->count();
     }
 
+   
+
+
     /**
      * @param $permission
      * @return bool
@@ -54,7 +57,6 @@ trait HasRolesAndPermissions
     {
         return $this->hasPermissionThroughRole($permission) || $this->hasPermission($permission->slug);
     }
-
     /**
      * @param $permission
      * @return bool
@@ -68,7 +70,6 @@ trait HasRolesAndPermissions
         }
         return false;
     }
-
     /**
      * @param array $permissions
      * @return mixed

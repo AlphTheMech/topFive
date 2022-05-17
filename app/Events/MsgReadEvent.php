@@ -13,17 +13,39 @@ use Illuminate\Queue\SerializesModels;
 class MsgReadEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-
-    public $chat;
+    
+    /**
+     * chat
+     *
+     * @var mixed
+     */
+    public $chat;    
+    /**
+     * session_id
+     *
+     * @var mixed
+     */
     private $session_id;
-
+    
+    /**
+     * __construct
+     *
+     * @param  mixed $chat
+     * @param  mixed $session_id
+     * @return void
+     */
     public function __construct($chat, $session_id)
     {
         $this->chat = $chat;
         $this->session_id = $session_id;
         $this->dontBroadcastToCurrentUser();
     }
-
+    
+    /**
+     * broadcastOn
+     *
+     * @return void
+     */
     public function broadcastOn()
     {
         return new PrivateChannel('Chat.'. $this->session_id);

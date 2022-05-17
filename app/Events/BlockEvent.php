@@ -15,9 +15,27 @@ class BlockEvent implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
 
+    /**
+     * session_id
+     *
+     * @var mixed
+     */
     public $session_id;
+    
+    /**
+     * blocked
+     *
+     * @var mixed
+     */
     public $blocked;
 
+    /**
+     * __construct
+     *
+     * @param  mixed $session_id
+     * @param  mixed $blocked
+     * @return void
+     */
     public function __construct($session_id, $blocked)
     {
         $this->session_id = $session_id;
@@ -25,7 +43,12 @@ class BlockEvent implements ShouldBroadcast
         $this->dontBroadcastToCurrentUser();
     }
 
-
+    
+    /**
+     * broadcastOn
+     *
+     * @return void
+     */
     public function broadcastOn()
     {
         return new PrivateChannel('Chat.' . $this->session_id);

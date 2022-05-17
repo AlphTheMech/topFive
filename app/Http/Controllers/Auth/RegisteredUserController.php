@@ -26,30 +26,34 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request)
     {
+        // return response()->json([$request->all()]);
 
-        $validated = Validator::make($request->all(), [
+        $validator = Validator::make($request->all(), [
             'first_name' => ['required', 'string', 'max:255'],
-            'name' => ['required', 'string', 'max:255'],
+            'middle_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', Rules\Password::defaults()],
         ]);
 
-        if ($validated->fails()) {
+        if ($validator->fails()) {
             return response()->json([
                 'error' => [
                     'code' => 422,
-                    'errors' => $validated->errors(),
+                    'errors' => $validator->errors(),
                     'message' => 'Ошибка валидации'
                 ]
             ], 422);
         }
+
         $user = User::create([
-            'name' => $request->name,
+            'name' => $request->first_name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'ip_address' => $request->ip()
         ]);
 
+        //$user->givePermissionsTo('administration');
         event(new Registered($user));
 
         Auth::login($user);
@@ -59,12 +63,11 @@ class RegisteredUserController extends Controller
         ]);
         PersonalData::create([
             'first_name' => $request->first_name,
-            'middle_name' => $request->name,
+            'middle_name' => $request->middle_name,
             'last_name' => $request->last_name,
             'user_id' => auth('sanctum')->user()->id
         ]);
         $user->roles()->attach(Role::where('slug', 'user')->first());
-
         $user->save();
         $user->permissions()->attach(Permission::where('slug', 'standard-user')->first());
         $user->save();

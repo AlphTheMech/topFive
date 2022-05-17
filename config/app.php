@@ -1,7 +1,5 @@
 <?php
 
-// use Illuminate\Support\Facades\App;
-
 return [
 
     /*
@@ -73,7 +71,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'UTC+6',
 
     /*
     |--------------------------------------------------------------------------
@@ -182,8 +180,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        // App\Providers\RolesServiceProvider::class,
-        // App\Providers\PermissionServiceProvider::class,
+
     ],
 
     /*

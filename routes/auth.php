@@ -12,8 +12,8 @@ use App\Http\Controllers\Auth\ConfirmablePasswordController;
 Route::post('/register', [RegisteredUserController::class, 'store'])
     ->middleware('guest');
 
-Route::post('/login', [AuthenticatedSessionController::class, 'store'])
-    ->middleware('guest');
+// Route::post('/login', [AuthenticatedSessionController::class, 'store'])
+//     ->middleware('guest');
 
 Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
     ->middleware('guest');
@@ -21,7 +21,7 @@ Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
 // Route::get('/password-reset/{token}', [NewPasswordController::class, 'store'])
 //     ->middleware('guest')
 //     ->name('password.update');
-Route::post('/password-reset', [NewPasswordController::class, 'store'])
+Route::post('/password-reset/{token}', [NewPasswordController::class, 'store'])
     ->middleware('guest')
     ->name('password.update');
 Route::get('/verify-email/{id}/{hash}', [VerifyEmailController::class, '__invoke'])

@@ -6,8 +6,10 @@ use App\Models\Permission;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Models\PersonalData;
 use App\Models\Role;
+use App\Models\User;
 use App\Models\UsersPermissions;
 use App\Models\UsersRoles;
+use Illuminate\Support\Str;
 
 class FindResource extends JsonResource
 {
@@ -19,15 +21,23 @@ class FindResource extends JsonResource
      */
     public function toArray($request)
     {
+        $fio = $this->FIO($this->id);
         return [
-            'email'=>$this->email, 
-            'first_name' => PersonalData::where('user_id', $this->id)->first()->first_name,
-            'middle_name' => PersonalData::where('user_id', $this->id)->first()->middle_name,
-            'last_name' =>PersonalData::where('user_id', $this->id)->first()->last_name,
-            'role_slug'=>Role::where('id',UsersRoles::where('user_id', $this->id)->first()->role_id)->first()->slug,
-            // 'role_name'=>Role::where('id',UsersRoles::where('user_id', $this->id)->first()->role_id)->first()->name,
-            // 'permission_name'=>Permission::where('id',UsersPermissions::where('user_id', $this->id)->first()->permission_id)->first()->name,
-            'permission_slug'=>Permission::where('id',UsersPermissions::where('user_id', $this->id)->first()->permission_id)->first()->slug,
+            'id' => $this->id,
+            'email' => $this->email,
+            'first_name' => $fio->first_name ?? null,
+            'middle_name' => $fio->middle_name ?? null,
+            'last_name' => $fio->last_name ?? null,
+            'abbreviation' => Str::upper(mb_substr($fio->last_name ?? null, 0, 1)) .
+                mb_substr($fio->last_name ?? null, 1) . ' ' .
+                Str::upper(mb_substr($fio->first_name ?? null, 0, 1)) . '.' .
+                Str::upper(mb_substr($fio->middle_name ?? null, 0, 1)) . '.',
+            'role_slug' => $this->roles->first()->slug,
+            'permission_slug' => $this->permissions->first()->slug,
         ];
+    }
+    protected function FIO($id)
+    {
+        return PersonalData::where('user_id', $id)->first();
     }
 }

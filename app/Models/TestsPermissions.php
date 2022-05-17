@@ -4,12 +4,36 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class TestsPermissions extends Model
 {
-    use HasFactory;
-    protected $fillable=[
+    use HasFactory, LogsActivity;
+
+    public static $logAttributes = [
+        'user_id', 'tests_id'
+    ];
+
+    public static $logName = 'Данные доступа к тесту';
+    
+    /**
+     * fillable
+     *
+     * @var array
+     */
+    protected $fillable = [
         'user_id',
         'tests_id'
     ];
+    
+    /**
+     * getActivitylogOptions
+     *
+     * @return LogOptions
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults();
+    }
 }
